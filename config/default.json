@@ -1,0 +1,39 @@
+{
+  "sentry": {
+    "dsn": ""
+  },
+  "POEditorApi": {
+    "url": "https://api.poeditor.com/v2/terms/list",
+    "key": "31bcbd65af92d777e26dded141006f62",
+    "id": "222031"
+  },
+  "apiCookiePrefix": "biz-dev-",
+  "apiCore": {
+    "url": "https://api-dev.bizbot.com/v1"
+  },
+  "myAssets": {
+    "url": "https://my-assets-dev.azurewebsites.net"
+  },
+  "news": {
+    "url": "https://biznews-dev.azurewebsites.net"
+  },
+  "secondaryMarket": {
+    "url": "https://transactions-dev.bizbot.com/"
+  },
+  "dashboard": {
+    "url": "https://dashboard-dev.bizbot.com"
+  },
+  "sigingFrontend": {
+    "url": "https://signing-dev.bizbot.com"
+  },
+  "notificationsFrontend": {
+    "url": "https://notifications-dev.bizbot.com"
+  },
+  "search": {
+    "url": "https://bizsearch.azurewebsites.net"
+  },
+  "notificationApi": {
+    "url": "https://notifier-api-dev.bizbot.com/api",
+    "key": "sssIxuXG111GcclaQrp2egc31jaHtIUafXQrDDT51NJ8yMaRdB3KMw=="
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "env": "production",
+  "server": {
+    "host": "https://app-manager.bizbot.com",
+    "port": 8585
+  },
+  "apiCookiePrefix": "biz-prod-",
+  "apiCore": {
+    "url": "https://api.bizbot.com/v1"
+  },
+  "myAssets": {
+    "url": "https://my-assets.azurewebsites.net"
+  },
+  "news": {
+    "url": "https://biznews.azurewebsites.net"
+  },
+  "secondaryMarket": {
+    "url": "https://transactions.bizbot.com/"
+  },
+  "dashboard": {
+    "url": "https://dashboard.bizbot.com"
+  },
+  "sigingFrontend": {
+    "url": "https://signing.bizbot.com"
+  },
+  "notificationsFrontend": {
+    "url": "https://notifications.bizbot.com"
+  },
+  "search": {
+    "url": "https://bizsearch.azurewebsites.net"
+  },
+  "notificationApi": {
+    "url": "https://notifier-api.bizbot.com/api",
+    "key": "HjA0z5HyRh576kwncRfruIj4BhoUNZmxPn4EaNthift3TvZJ4MUgtQ=="
+  }
+}

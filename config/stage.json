@@ -1,0 +1,36 @@
+{
+  "env": "stage",
+  "server": {
+    "host": "https://app-manager-stage.bizbot.com",
+    "port": 80
+  },
+  "apiCookiePrefix": "biz-stage-",
+  "apiCore": {
+    "url": "https://api-stage.bizbot.com/v1"
+  },
+  "myAssets": {
+    "url": "https://my-assets-stage.azurewebsites.net"
+  },
+  "news": {
+    "url": "https://biznews-stage.azurewebsites.net"
+  },
+  "secondaryMarket": {
+    "url": "https://transactions-stage.bizbot.com/"
+  },
+  "dashboard": {
+    "url": "https://dashboard-stage.bizbot.com"
+  },
+  "sigingFrontend": {
+    "url": "https://signing-stage.bizbot.com"
+  },
+  "notificationsFrontend": {
+    "url": "https://notifications-stage.bizbot.com"
+  },
+  "search": {
+    "url": "https://bizsearch.azurewebsites.net"
+  },
+  "notificationApi": {
+    "url": "https://notifier-api-stage.bizbot.com/api",
+    "key": "FzaXyteM4/DrrD7I5HjReR5UFfAOMSYnI01wIEWNEWAeM5x9Erv21w=="
+  }
+}
