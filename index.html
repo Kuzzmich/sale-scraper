@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Sample Site</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js" defer></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+<div id="vue-app" class="container">
+  <div class="row">
+    <div v-for="product in products" class="col-12 col-md-6 col-lg-3 mb-3">
+      <div>
+        <img class="img-fluid" :src="product.img">
+      </div>
+      <div>
+        Discount percentage - <span style="color: red; font-weight: bold">{{Number((product.oldPrice - product.newPrice) / product.oldPrice * 100).toFixed(0)}}%</span>
+      </div>
+      <div>
+        {{product.description}}
+      </div>
+      <div>
+        Old Price: {{product.oldPrice}} <br> New Price: <b style="color: red">{{product.newPrice}}</b>
+      </div>
+      <div>
+        <a :href="product.url" target="_blank">Open on site</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const app = new Vue({
+            el: '#vue-app',
+            data: {
+                products: [],
+            },
+            mounted: async function () {
+                const response = await axios.get('/get-products');
+                this.products = response.data;
+            }
+        });
+    });
+</script>
+</body>
+</html>
