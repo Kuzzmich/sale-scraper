@@ -52,24 +52,37 @@ module.exports = (app) => {
       showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
     }
 
-    await page.evaluate(_viewportHeight => {
-      window.scrollBy(0, 0);
+    // Scroll back to top
+    await page.evaluate(_ => {
+      window.scrollTo(0, 0);
     });
 
     // Get the height of the rendered page
     const bodyHandle = await page.$('main');
     const {height} = await bodyHandle.boundingBox();
     await bodyHandle.dispose();
-    // Get scroll width and height of the rendered page and set viewport
-    const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
-    await page.setViewport({ width: bodyWidth, height: parseInt(height) });
+
+    console.log('scrolling bottom');
+    // Scroll one viewport at a time, pausing to let content load
+    const viewportHeight = page.viewport().height;
+    let viewportIncr = 0;
+    while (viewportIncr + viewportHeight < height) {
+      await page.evaluate(_viewportHeight => {
+        window.scrollBy(0, _viewportHeight);
+      }, viewportHeight);
+      await page.waitFor(200);
+      viewportIncr = viewportIncr + viewportHeight;
+    }
+
+    // Scroll back to top
+    await page.evaluate(_ => {
+      window.scrollTo(0, 0);
+    });
 
     // Some extra delay to let images load
     await helpers.wait(5000);
 
-    /*await page.evaluate(() => {
-      window.scrollBy(0, window.innerHeight);
-    });*/
+    console.log('parsing data');
     const html = await page.content();
     const products = $('[data-auto-id="productTile"]', html);
 
@@ -93,7 +106,8 @@ module.exports = (app) => {
     fs.writeFileSync("parsed.json", JSON.stringify(productsData, null, 2));
     console.log('products length:', productsData.length);
     console.log('without images:', productsData.filter(p => !p.img).length);
-    // console.log(productsData);
+
+    await browser.close();
     console.log('asos scraping finished!');
     res.send('hello puppeteer');
   });
