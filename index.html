@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Sample Site</title>
+  <title>SALE!!1!</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js" defer></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
@@ -12,34 +12,41 @@
 <body>
 <div id="vue-app" class="container">
   <div class="row">
-    <div v-for="product in products" class="col-12 col-md-6 col-lg-3 mb-3">
-      <div>
-        <img class="img-fluid" :src="product.img">
-      </div>
-      <div>
-        Discount percentage - <span style="color: red; font-weight: bold">{{Number((product.oldPrice - product.newPrice) / product.oldPrice * 100).toFixed(0)}}%</span>
-      </div>
-      <div>
-        {{product.description}}
-      </div>
-      <div>
-        Old Price: {{product.oldPrice}} <br> New Price: <b style="color: red">{{product.newPrice}}</b>
-      </div>
-      <div>
-        <a :href="product.url" target="_blank">Open on site</a>
-      </div>
-    </div>
+    <table class="table table-sm table-striped table-hover">
+      <thead>
+        <tr style="font-weight: bold">
+          <td>name</td>
+          <td>old Price</td>
+          <td>new Price</td>
+          <td>discount</td>
+          <td>image</td>
+          <td>shop</td>
+          <td>url</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="product in products">
+          <td>{{product.description}}</td>
+          <td>{{product.oldPrice}}</td>
+          <td>{{product.newPrice}}</td>
+          <td>{{product.discount}}%</td>
+          <td><img class="img-fluid" :src="product.img" style="max-height: 70px;"></td>
+          <td>{{product.shop}}</td>
+          <td><a :href="product.url" target="_blank">Open on site</a></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', async function () {
         const app = new Vue({
             el: '#vue-app',
             data: {
                 products: [],
             },
-            mounted: async function () {
+            created: async function () {
                 const response = await axios.get('/get-products');
                 this.products = response.data;
             }
