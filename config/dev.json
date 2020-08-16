@@ -1,7 +1,0 @@
-{
-  "env": "dev",
-  "server": {
-    "host": "https://app-manager-dev.bizbot.com",
-    "port": 80
-  }
-}

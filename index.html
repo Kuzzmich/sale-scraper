@@ -15,6 +15,7 @@
     <table class="table table-sm table-striped table-hover">
       <thead>
         <tr style="font-weight: bold">
+          <td>date/time</td>
           <td>name</td>
           <td>old Price</td>
           <td>new Price</td>
@@ -26,10 +27,11 @@
       </thead>
       <tbody>
         <tr v-for="product in products">
-          <td>{{product.description}}</td>
+          <td class="text-center">{{new Date(product.timestamp).toLocaleDateString()}}<br>-<br>{{new Date(product.timestamp).toLocaleTimeString()}}</td>
+          <td><b>{{product.name}}</b></td>
           <td>{{product.oldPrice}}</td>
           <td>{{product.newPrice}}</td>
-          <td>{{product.discount}}%</td>
+          <td class="text-danger">{{product.discount}}%</td>
           <td><img class="img-fluid" :src="product.img" style="max-height: 70px;"></td>
           <td>{{product.shop}}</td>
           <td><a :href="product.url" target="_blank">Open on site</a></td>
