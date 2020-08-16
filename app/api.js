@@ -1,16 +1,15 @@
 const config = require('config');
 const $ = require('cheerio');
-const path = require('path');
 const helpers = require('./helpers');
 const services = require('./services');
 
 
 module.exports = (app) => {
   app.get('/asos', async (req, res) => {
-    console.log('asos scraping started...');
+    const shopName = 'asos';
+    console.log(`${shopName} scraping started...`);
 
     const {browser, page} = await helpers.initBrowser();
-    const shopName = 'asos';
 
     await page.goto(config.asosUrl, {waitUntil: 'load'});
 
@@ -71,9 +70,13 @@ module.exports = (app) => {
 
     await browser.close();
     const insertedProducts = await services.syncProductsCollection(parsedProductsList, shopName);
+    if (req.query.sendNotification && insertedProducts.length) {
+      console.log('sending telegram notification');
+      await services.sendTelegramNotification(insertedProducts);
+    }
 
     console.log('inserted products length:', insertedProducts.length);
-    console.log('asos scraping finished!');
+    console.log(`${shopName} scraping finished!`);
 
     res.send('hello puppeteer');
   });
@@ -82,7 +85,10 @@ module.exports = (app) => {
     const client = await services.getMongoClient();
     const db = client.db(config.mongoDbName);
     // TODO: optimize it by paging
-    const products = await db.collection(config.productsCollectionName).find().sort({timestamp: -1, discount: -1}).toArray();
+    const products = await db.collection(config.productsCollectionName).find().sort({
+      timestamp: -1,
+      discount: -1
+    }).toArray();
     res.send(products);
   });
 };

@@ -1,5 +1,7 @@
 const config = require('config');
 const MongoClient = require('mongodb').MongoClient;
+const bot = require('./telegramBot');
+const helpers = require('./helpers');
 
 const getMongoClient = async () => {
   return await MongoClient.connect(config.mongoConnectionString, {
@@ -40,7 +42,14 @@ const syncProductsCollection = async (productsList, shopName) => {
   return filteredProducts;
 };
 
+const sendTelegramNotification = async (insertedProducts) => {
+  const message = insertedProducts.map(p => helpers.generateTelegramMessageText(p)).join('\n');
+  // send text message with all the products
+  await bot.sendMessage(config.telegramChatId, message, {parse_mode: 'HTML'});
+};
+
 module.exports = {
   getMongoClient,
   syncProductsCollection,
+  sendTelegramNotification
 };
