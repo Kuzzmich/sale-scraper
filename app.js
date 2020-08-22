@@ -1,6 +1,7 @@
 const port = process.env.port || 8008;
 const express = require('express');
 const http = require('http');
+const scrapingQueue = require('./app/queues/scrapingQueue');
 const app = express();
 
 const cors = require('cors');
@@ -16,9 +17,11 @@ app.use(function (err, req, res, next) {
 });
 
 
-var httpServer = http.createServer(app);
+const httpServer = http.createServer(app);
 httpServer.listen(port, function () {
     console.log('Listening on port %d', httpServer.address().port);
 });
+
+scrapingQueue.startScraping();
 
 module.exports = app;

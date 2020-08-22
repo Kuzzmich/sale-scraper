@@ -27,10 +27,14 @@ const scrollPageToBottom = async (page, stepHeight) => {
 };
 
 const generateTelegramMessageText = (product) => {
+  let discountEmoji = '🔵';
+  if (product.discount > 30 ) discountEmoji = '🟢';
+  if (product.discount >= 50 ) discountEmoji = '🤡';
+
   return `<b>${product.name}</b>\n`
     + `Магазин - ${product.shop.toUpperCase()}\n`
-    + `Скидка - <b>${product.discount}%</b>\n`
-    + `<s>${product.oldPrice}</s> - <b>${product.newPrice}</b>\n`
+    + `Скидка - <b>${discountEmoji} ${product.discount}%</b>\n`
+    + `<s>${product.oldPrice}</s> - <b>💸 ${product.newPrice}</b>\n`
     + `<a href="${product.url}">Ссылка на товар</a>\n`
 };
 

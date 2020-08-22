@@ -1,5 +1,7 @@
 const config = require('config');
 const MongoClient = require('mongodb').MongoClient;
+const axios = require('axios');
+const FileType = require('file-type');
 const bot = require('./telegramBot');
 const helpers = require('./helpers');
 
@@ -10,10 +12,10 @@ const getMongoClient = async () => {
   });
 };
 
-const syncProductsCollection = async (productsList, shopName) => {
+const syncProductsCollection = async (productsList) => {
   const client = await getMongoClient();
   const db = client.db(config.mongoDbName);
-  const filterQuery = {'shop': shopName};
+  const filterQuery = {'shop': (productsList[0] || {}).shop || ''};
   const oldProducts = await db.collection(config.productsCollectionName).find(filterQuery).toArray();
   const filteredProducts = productsList.filter((p) => {
     const oldProduct = oldProducts.find(op => op.url === p.url);
@@ -48,8 +50,31 @@ const sendTelegramNotification = async (insertedProducts) => {
   await bot.sendMessage(config.telegramChatId, message, {parse_mode: 'HTML'});
 };
 
+const sendTelegramMediaGroup = async (insertedProducts) => {
+  const message = await Promise.all(insertedProducts.map(async p => {
+    const imageRes = await axios(p.img, { responseType: 'arraybuffer' });
+    const image = imageRes.data;
+    const fileType = await FileType.fromBuffer(image);
+
+    return {
+      type: 'photo',
+      media: image,
+      caption: helpers.generateTelegramMessageText(p),
+      parse_mode: 'HTML',
+      fileOptions: {
+        filename: p.name,
+        contentType: fileType.mime,
+      }
+    }
+  }));
+
+  // send text message with all the products
+  await bot.sendMediaGroup(config.telegramChatId, message);
+};
+
 module.exports = {
   getMongoClient,
   syncProductsCollection,
-  sendTelegramNotification
+  sendTelegramNotification,
+  sendTelegramMediaGroup
 };

@@ -4,5 +4,7 @@
   "mongoDbName": "sale-products",
   "productsCollectionName": "products",
   "telegramBotToken": "1393077924:AAHEtNqiJX07HQ39PihwdDogg1k0ViiVlEQ",
-  "telegramChatId": -453849151
+  "telegramChatId": -453849151,
+  "redisUrl": "redis://127.0.0.1:6379",
+  "sentryDsn": "https://f40d49b0a4e2419990c6edde57ce69fc@o261300.ingest.sentry.io/5400523"
 }
