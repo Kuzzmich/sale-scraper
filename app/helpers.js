@@ -7,7 +7,11 @@ const wait = (ms) => {
 };
 
 const initBrowser = async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath: process.env.CHROME_BIN || null,
+    args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']
+  });
   const page = await browser.newPage();
   await page.setUserAgent(userAgent.toString());
 
