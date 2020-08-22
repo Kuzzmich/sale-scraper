@@ -12,7 +12,7 @@ const asosFetch = async () => {
   const {browser, page} = await helpers.initBrowser();
 
   try {
-    await page.goto(config.asosUrl, {waitUntil: 'load'});
+    await page.goto(config.asosUrl, {waitUntil: 'networkidle0'});
 
     console.log(`connected to page`);
     let showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
