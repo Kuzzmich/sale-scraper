@@ -15,6 +15,7 @@ const asosFetch = async () => {
   let showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
   while (showMoreBtn) {
     await showMoreBtn.evaluate(btn => btn.click());
+    console.log(`more button clicked`);
     await page.waitFor(1500);
     showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
   }
