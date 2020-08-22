@@ -11,6 +11,7 @@ const asosFetch = async () => {
 
   await page.goto(config.asosUrl, {waitUntil: 'load'});
 
+  console.log(`connected to page`);
   let showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
   while (showMoreBtn) {
     await showMoreBtn.evaluate(btn => btn.click());
@@ -18,6 +19,7 @@ const asosFetch = async () => {
     showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
   }
 
+  console.log(`all products loaded`);
   // Scroll back to top
   await page.evaluate(_ => {
     window.scrollTo(0, 0);
