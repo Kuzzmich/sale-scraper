@@ -28,7 +28,7 @@ scrapingQueue.process(async (job, done) => {
 
     scrapingQueue.add(
       {scraperName: nextScraper},
-      {delay: 3000, backoff: 30000, attemps: 5}
+      {delay: 3000, backoff: 30000, attemps: 5, removeOnComplete: true, removeOnFail: true}
     );
 
     done();
@@ -43,7 +43,7 @@ const startScraping = () => {
   const scraperName = scrapersList[0];
   scrapingQueue.add(
       {scraperName: scraperName},
-      {delay: 3000, backoff: 30000, attemps: 5}
+      {delay: 3000, backoff: 30000, attemps: 5, removeOnComplete: true, removeOnFail: true}
     );
 };
 
