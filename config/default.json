@@ -1,5 +1,5 @@
 {
-  "asosUrl": "https://www.asos.com/ru/men/rasprodazha/tufli-i-sportivnaya-obuv/cat/?cid=1935&currentpricerange=490-17990&nlid=mw|%D1%80%D0%B0%D1%81%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B6%D0%B0|%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D0%BF%D0%BE%20%D1%82%D0%B8%D0%BF%D1%83%20%D0%BF%D1%80%D0%BE%D0%B4%D1%83%D0%BA%D1%82%D0%B0&refine=attribute_1047:8606",
+  "asosUrl": "https://www.asos.com/ru/men/rasprodazha/tufli-i-sportivnaya-obuv/cat/?cid=1935&currentpricerange=490-17990&nlid=mw|%D1%80%D0%B0%D1%81%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B6%D0%B0|%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D0%BF%D0%BE%20%D1%82%D0%B8%D0%BF%D1%83%20%D0%BF%D1%80%D0%BE%D0%B4%D1%83%D0%BA%D1%82%D0%B0&refine=attribute_1047:8606|brand:17,18,16346,12967,13688,75,298,13931,96,13839,105,3175,131,13813,3738,171,14116,12668,15906,3211,202,224,16123,15139,299,12461,2937,391,12412,14512,401,13939,13073,16492,3664,499,13817,14468,2986,15176,13623,15177,15010,527,13872,14126,589,2988,16284,12983,14451,13540,14159,15349,3009,16363,3312,3672,3029,15631,3659,14176,765,16082|size:2320,2318,2315,2334,2337,2328,2331,1855",
   "mongoConnectionString": "mongodb+srv://admin:Kuzzmich26rus@cluster0.1twre.mongodb.net/sale-products?retryWrites=true&w=majority",
   "mongoDbName": "sale-products",
   "productsCollectionName": "products",
