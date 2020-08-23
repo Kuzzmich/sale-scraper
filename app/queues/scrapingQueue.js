@@ -13,6 +13,7 @@ const scrapingQueue = new Queue(
     guardInterval: 30000,
     limiter: {
       max: 1,
+      duration: 30000,
     }
   }
 );
