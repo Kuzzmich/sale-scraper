@@ -15,7 +15,7 @@ const asos = async (sendNotification) => {
     for (let i = 0, j = insertedProducts.length, f = 0; i < j; i += 10, f++) {
       telegramMessageQueue.add(
         {products: insertedProducts.slice(i, i + 10)},
-        {delay: 61000 * f, backoff: 61000, attemps: 5}
+        {backoff: 61000, attemps: 5}
       );
     }
   }

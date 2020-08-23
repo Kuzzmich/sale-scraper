@@ -3,8 +3,8 @@
   "mongoConnectionString": "mongodb+srv://admin:Kuzzmich26rus@cluster0.1twre.mongodb.net/sale-products?retryWrites=true&w=majority",
   "mongoDbName": "sale-products",
   "productsCollectionName": "products",
-  "telegramBotToken": "1393077924:AAHEtNqiJX07HQ39PihwdDogg1k0ViiVlEQ",
-  "telegramChatId": -453849151,
+  "telegramBotToken": "1213367845:AAEIAD2vSzbitW08wFO-aRy3F3qKgbeFdDI",
+  "telegramChatId": 434267268,
   "redisUrl": "redis://127.0.0.1:6379",
   "sentryDsn": "https://f40d49b0a4e2419990c6edde57ce69fc@o261300.ingest.sentry.io/5400523"
 }

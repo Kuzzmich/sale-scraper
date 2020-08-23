@@ -9,7 +9,11 @@ const telegramMessageQueue = new Queue(
   'telegram-messages',
   config.redisUrl,
   {
-    guardInterval: 61000
+    guardInterval: 61000,
+    limiter: {
+      max: 1,
+      duration: 61000
+    }
   }
 );
 

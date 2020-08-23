@@ -10,7 +10,10 @@ const scrapingQueue = new Queue(
   'scrapers',
   config.redisUrl,
   {
-    guardInterval: 30000
+    guardInterval: 30000,
+    limiter: {
+      max: 1,
+    }
   }
 );
 
