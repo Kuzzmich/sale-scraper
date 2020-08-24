@@ -89,6 +89,7 @@ const asosFetch = async () => {
 
     return parsedProductsList;
   } catch (e) {
+    await browser.close();
     Sentry.captureException(e);
     console.log(e);
     return [];

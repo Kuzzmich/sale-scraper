@@ -13,7 +13,7 @@ const scrapingQueue = new Queue(
     guardInterval: 30000,
     limiter: {
       max: 1,
-      duration: 30000,
+      duration: 180000,
     }
   }
 );
@@ -26,9 +26,10 @@ scrapingQueue.process(async (job, done) => {
     const currentScraperIndex = scrapersList.findIndex(s => s === scraperName);
     const nextScraper = scrapersList[currentScraperIndex + 1] || scrapersList[0];
 
+    console.log(`Posting new ${nextScraper.toUpperCase()} parsing job to queue`);
     scrapingQueue.add(
       {scraperName: nextScraper},
-      {delay: 3000, backoff: 30000, attemps: 5, removeOnComplete: true, removeOnFail: true}
+      {delay: 180000, attemps: 1, removeOnComplete: true, removeOnFail: true}
     );
 
     done();
@@ -43,7 +44,7 @@ const startScraping = () => {
   const scraperName = scrapersList[0];
   scrapingQueue.add(
       {scraperName: scraperName},
-      {delay: 3000, backoff: 30000, attemps: 5, removeOnComplete: true, removeOnFail: true}
+      {delay: 3000, attemps: 1, removeOnComplete: true, removeOnFail: true}
     );
 };
 
