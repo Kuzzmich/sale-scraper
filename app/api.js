@@ -27,6 +27,7 @@ module.exports = (app) => {
       timestamp: -1,
       discount: -1
     }).toArray();
+    await client.close();
     res.send(products);
   });
 };
