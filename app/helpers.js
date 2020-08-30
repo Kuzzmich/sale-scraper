@@ -15,31 +15,31 @@ const initBrowser = async () => {
   const page = await browser.newPage();
   await page.setUserAgent(userAgent.toString());
 
-  return { browser, page };
+  return {browser, page};
 };
 
 const scrollPageToBottom = async (page, stepHeight) => {
   const viewportHeight = page.viewport().height;
-    let viewportIncr = 0;
-    while (viewportIncr + viewportHeight < stepHeight) {
-      await page.evaluate(_viewportHeight => {
-        window.scrollBy(0, _viewportHeight);
-      }, viewportHeight);
-      await page.waitFor(200);
-      viewportIncr = viewportIncr + viewportHeight;
-    }
+  let viewportIncr = 0;
+  while (viewportIncr + viewportHeight < stepHeight) {
+    await page.evaluate(_viewportHeight => {
+      window.scrollBy(0, _viewportHeight);
+    }, viewportHeight);
+    await page.waitFor(200);
+    viewportIncr = viewportIncr + viewportHeight;
+  }
 };
 
 const generateTelegramMessageText = (product) => {
   let discountEmoji = '🔵';
-  if (product.discount > 30 ) discountEmoji = '🟢';
-  if (product.discount >= 50 ) discountEmoji = '🤡';
+  if (product.discount > 30) discountEmoji = '🟢';
+  if (product.discount >= 50) discountEmoji = '🤡';
 
-  return `<b>${product.name}</b>\n`
-    + `Магазин - ${product.shop.toUpperCase()}\n`
+  return `<s>${product.oldPrice}</s> - <b>💸 ${product.newPrice}</b>\n`
     + `Скидка - <b>${discountEmoji} ${product.discount}%</b>\n`
-    + `<s>${product.oldPrice}</s> - <b>💸 ${product.newPrice}</b>\n`
+    + `<b>${product.name}</b>\n`
     + `<a href="${product.url}">Ссылка на товар</a>\n`
+    + `Магазин - ${product.shop.toUpperCase()}\n`
 };
 
 module.exports = {
