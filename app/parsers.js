@@ -51,6 +51,7 @@ const asosFetch = async () => {
     console.log('parsing data');
     const html = await page.content();
     const products = $('[data-auto-id="productTile"]', html);
+    await browser.close();
 
     const parsedProductsList = $(products).map((i, p) => {
       const link = p.children[0];
@@ -82,11 +83,8 @@ const asosFetch = async () => {
         if (a.discount < b.discount) {
           return 1;
         }
-        // a должно быть равным b
         return 0;
       });
-
-    await browser.close();
 
     return parsedProductsList;
   } catch (e) {
@@ -142,18 +140,19 @@ const endClothingFetch = async () => {
     await helpers.wait(5000);
 
     console.log('parsing data');
-    // const html = await page.content();
-    const products = await page.$$('.sc-1koxpgo-0.bTJixI.sc-5sgtnq-2.gHSLMJ');
+    const html = await page.content();
+    const products = $('.sc-1koxpgo-0.bTJixI.sc-5sgtnq-2.gHSLMJ', html);
+    await browser.close();
 
-    const parsedProductsList = (await Promise.all(products.map(async (p, i) => {
+    const parsedProductsList = $(products).map((i, p) => {
       const endClothingDomen = 'https://www.endclothing.com';
 
-      const url = endClothingDomen + (await page.evaluate(a => a.getAttribute('href'), p));
-      const name = await p.$eval('.sc-5sgtnq-3.dMAnEc', (span) => span.innerText.trim());
-      const oldPrice = parseFloat(await p.$eval('[data-test="ProductCard__ProductFullPrice"]', (span) => span.innerText.trim().replace('RUB', '').replace(',', '')));
-      const newPrice = parseFloat(await p.$eval('[data-test="ProductCard__ProductFinalPrice"]', (span) => span.innerText.trim().replace('RUB', '').replace(',', '')));
+      const url = endClothingDomen + $(p).attr('href');
+      const name = $(p).find('.sc-5sgtnq-3.dMAnEc').text().trim();
+      const oldPrice = parseFloat($(p).find('[data-test="ProductCard__ProductFullPrice"]').text().trim().replace('RUB', '').replace(',', ''));
+      const newPrice = parseFloat($(p).find('[data-test="ProductCard__ProductFinalPrice"]').text().trim().replace('RUB', '').replace(',', ''));
       const discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
-      const img = await p.$eval('.sc-1i8wfdy-0.iKFnmr.sc-5sgtnq-0.gHSKWP', (img) => img.getAttribute('src'));
+      const img = $(p).find('.sc-1i8wfdy-0.iKFnmr.sc-5sgtnq-0.gHSKWP').attr('src');
       const timestamp = Date.now();
 
       return {
@@ -166,7 +165,8 @@ const endClothingFetch = async () => {
         url,
         timestamp,
       };
-    })))
+    })
+      .get()
       .filter(p => p.discount >= 20)
       .sort((a, b) => {
         if (a.discount > b.discount) {
@@ -175,11 +175,8 @@ const endClothingFetch = async () => {
         if (a.discount < b.discount) {
           return 1;
         }
-        // a должно быть равным b
         return 0;
       });
-
-    await browser.close();
 
     return parsedProductsList;
   } catch (e) {
