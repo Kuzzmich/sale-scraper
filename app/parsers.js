@@ -195,7 +195,7 @@ const yooxFetch = async () => {
   const {browser, page} = await helpers.initBrowser();
 
   try {
-    await page.goto(config.yooxUrl, {waitUntil: 'networkidle2'});
+    await page.goto(config.yooxUrl, {waitUntil: 'load'});
 
     console.log(`${new Date().toLocaleTimeString()} connected to page`);
     const moreBtnSelector = '.pure-menu-item.nextPage';
