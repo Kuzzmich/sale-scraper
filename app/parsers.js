@@ -14,18 +14,18 @@ const asosFetch = async () => {
   try {
     await page.goto(config.asosUrl, {waitUntil: 'networkidle0'});
 
-    console.log(`connected to page`);
+    console.log(`${new Date().toLocaleTimeString()} connected to page`);
     let showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
     let clickCounter = 0;
     while (showMoreBtn && clickCounter < 30) {
       await showMoreBtn.evaluate(btn => btn.click());
-      console.log(`more button clicked`);
+      console.log(`${new Date().toLocaleTimeString()} more button clicked`);
       await page.waitFor(1500);
       showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
       clickCounter++;
     }
 
-    console.log(`all products loaded`);
+    console.log(`${new Date().toLocaleTimeString()} all products loaded`);
     // Scroll back to top
     await page.evaluate(_ => {
       window.scrollTo(0, 0);
@@ -36,7 +36,7 @@ const asosFetch = async () => {
     const {height} = await bodyHandle.boundingBox();
     await bodyHandle.dispose();
 
-    console.log('scrolling bottom');
+    console.log(`${new Date().toLocaleTimeString()} scrolling bottom`);
     // Scroll one viewport at a time, pausing to let content load
     await helpers.scrollPageToBottom(page, height);
 
@@ -48,7 +48,7 @@ const asosFetch = async () => {
     // Some extra delay to let images load
     await helpers.wait(5000);
 
-    console.log('parsing data');
+    console.log(`${new Date().toLocaleTimeString()} parsing data`);
     const html = await page.content();
     const products = $('[data-auto-id="productTile"]', html);
     await browser.close();
@@ -105,18 +105,18 @@ const endClothingFetch = async () => {
   try {
     await page.goto(config.endClothingUrl, {waitUntil: 'load'});
 
-    console.log(`connected to page`);
+    console.log(`${new Date().toLocaleTimeString()} connected to page`);
     let showMoreBtn = await page.$('.sc-1j0b8up-0.Xpmnl');
     let clickCounter = 0;
     while (showMoreBtn && clickCounter < 30) {
       await showMoreBtn.evaluate(btn => btn.click());
-      console.log(`more button clicked`);
+      console.log(`${new Date().toLocaleTimeString()} more button clicked`);
       await page.waitFor(1500);
       showMoreBtn = await page.$('.sc-1j0b8up-0.Xpmnl');
       clickCounter++;
     }
 
-    console.log(`all products loaded`);
+    console.log(`${new Date().toLocaleTimeString()} all products loaded`);
     // Scroll back to top
     await page.evaluate(_ => {
       window.scrollTo(0, 0);
@@ -127,7 +127,7 @@ const endClothingFetch = async () => {
     const {height} = await bodyHandle.boundingBox();
     await bodyHandle.dispose();
 
-    console.log('scrolling bottom');
+    console.log(`${new Date().toLocaleTimeString()} scrolling bottom`);
     // Scroll one viewport at a time, pausing to let content load
     await helpers.scrollPageToBottom(page, height);
 
@@ -139,7 +139,7 @@ const endClothingFetch = async () => {
     // Some extra delay to let images load
     await helpers.wait(5000);
 
-    console.log('parsing data');
+    console.log(`${new Date().toLocaleTimeString()} parsing data`);
     const html = await page.content();
     const products = $('.sc-1koxpgo-0.bTJixI.sc-5sgtnq-2.gHSLMJ', html);
     await browser.close();
@@ -188,7 +188,111 @@ const endClothingFetch = async () => {
 
 };
 
+const yooxFetch = async () => {
+  const shopName = 'yoox';
+  console.log(`${new Date().toLocaleTimeString()} ${shopName} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.yooxUrl, {waitUntil: 'networkidle2'});
+
+    console.log(`${new Date().toLocaleTimeString()} connected to page`);
+    const moreBtnSelector = '.pure-menu-item.nextPage';
+    const productNodes = [];
+    let showMoreBtn = await page.$(moreBtnSelector);
+    let clickCounter = 0;
+    // TODO: refactor it
+    do {
+      console.log(`${new Date().toLocaleTimeString()} more button clicked`);
+
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Get the height of the rendered page
+      const bodyHandle = await page.$('#itemsGrid');
+      const {height} = await bodyHandle.boundingBox();
+      await bodyHandle.dispose();
+
+      console.log(`${new Date().toLocaleTimeString()} scrolling bottom`);
+      // Scroll one viewport at a time, pausing to let content load
+      await helpers.scrollPageToBottom(page, height);
+
+      // Scroll back to top
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Some extra delay to let images load
+      await helpers.wait(5000);
+
+      console.log(`${new Date().toLocaleTimeString()} parsing data`);
+      const html = await page.content();
+      const products = $('.itemContainer', html).get();
+      productNodes.push(...products);
+
+      showMoreBtn = await page.$(moreBtnSelector);
+      clickCounter++;
+      if (showMoreBtn) {
+        await showMoreBtn.evaluate(btn => btn.click());
+        await page.waitFor(3000);
+      }
+    } while (showMoreBtn && clickCounter < 30);
+
+    console.log(`${new Date().toLocaleTimeString()} all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    const parsedProductsList = $(productNodes).map((i, p) => {
+      const endClothingDomen = 'https://www.yoox.com';
+
+      const url = endClothingDomen + $(p).find('a.itemlink').attr('href');
+      const brand = $(p).find('.brand').text().trim();
+      const title = $(p).find('.title').text().trim();
+      const name = `${brand} ${title}`;
+      const oldPrice = parseFloat($(p).find('span.oldprice').text().trim().replace('руб', '').replace(' ', '') || 0);
+      const newPrice = parseFloat($(p).find('span.newprice').text().trim().replace('руб', '').replace(' ', '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = $(p).find('img.front').attr('src');
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+
+};
+
 module.exports = {
   asosFetch,
-  endClothingFetch
+  endClothingFetch,
+  yooxFetch
 };

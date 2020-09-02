@@ -13,7 +13,7 @@ const initBrowser = async () => {
     args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']
   });
   const page = await browser.newPage();
-  await page.setUserAgent(userAgent.toString());
+  await page.setUserAgent(userAgent.random().toString());
 
   return {browser, page};
 };

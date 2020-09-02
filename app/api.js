@@ -15,6 +15,11 @@ module.exports = (app) => {
     res.send('hello puppeteer');
   });
 
+  app.get('/yoox', async (req, res) => {
+    await scrapers.yoox(false);
+    res.send('hello puppeteer');
+  });
+
   app.get('/restart-scraping', async (req, res) => {
     await scrapingQueue.queue.pause();
     await scrapingQueue.queue.empty();

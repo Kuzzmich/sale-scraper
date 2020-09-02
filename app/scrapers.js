@@ -37,7 +37,20 @@ const endClothing = async (sendNotification) => {
   console.log(`END CLOTHING scraping finished!`);
 };
 
+const yoox = async (sendNotification) => {
+  const parsedProductsList = await parsers.yooxFetch();
+  const insertedProducts = await services.syncProductsCollection(parsedProductsList);
+
+  if (sendNotification && insertedProducts.length) {
+    await sendNotifications(insertedProducts);
+  }
+
+  console.log('inserted products length:', insertedProducts.length);
+  console.log(`YOOX scraping finished!`);
+};
+
 module.exports = {
   asos,
   endClothing,
+  yoox,
 };
