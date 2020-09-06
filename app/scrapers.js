@@ -1,10 +1,11 @@
+const { getTime } = require('./helpers');
 const parsers = require('./parsers');
 const services = require('./services');
 const telegramMessageQueue = require('./queues/telegramQueue');
 
 
 const sendNotifications = async (insertedProducts) => {
-  console.log('sending telegram notification');
+  console.log(`${getTime()} - sending telegram notification`);
     for (let i = 0, j = insertedProducts.length, f = 0; i < j; i += 10, f++) {
       telegramMessageQueue.add(
         {products: insertedProducts.slice(i, i + 10)},
@@ -21,8 +22,8 @@ const asos = async (sendNotification) => {
     await sendNotifications(insertedProducts);
   }
 
-  console.log('inserted products length:', insertedProducts.length);
-  console.log(`ASOS scraping finished!`);
+  console.log(`${getTime()} - inserted products length: ${insertedProducts.length}`);
+  console.log(`${getTime()} - ASOS scraping finished!`);
 };
 
 const endClothing = async (sendNotification) => {
@@ -33,8 +34,8 @@ const endClothing = async (sendNotification) => {
     await sendNotifications(insertedProducts);
   }
 
-  console.log('inserted products length:', insertedProducts.length);
-  console.log(`END CLOTHING scraping finished!`);
+  console.log(`${getTime()} - inserted products length: ${insertedProducts.length}`);
+  console.log(`${getTime()} - END CLOTHING scraping finished!`);
 };
 
 const yoox = async (sendNotification) => {
@@ -45,8 +46,8 @@ const yoox = async (sendNotification) => {
     await sendNotifications(insertedProducts);
   }
 
-  console.log('inserted products length:', insertedProducts.length);
-  console.log(`YOOX scraping finished!`);
+  console.log(`${getTime()} - inserted products length: ${insertedProducts.length}`);
+  console.log(`${getTime()} - YOOX scraping finished!`);
 };
 
 module.exports = {

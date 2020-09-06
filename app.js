@@ -22,6 +22,8 @@ httpServer.listen(port, function () {
     console.log('Listening on port %d', httpServer.address().port);
 });
 
-scrapingQueue.startScraping();
+if (process.env.NODE_ENV === 'production') {
+  scrapingQueue.startScraping();
+}
 
 module.exports = app;

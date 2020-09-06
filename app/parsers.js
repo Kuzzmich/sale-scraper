@@ -3,29 +3,30 @@ const $ = require('cheerio');
 const Sentry = require("@sentry/node");
 Sentry.init({dsn: config.sentryDsn});
 const helpers = require('./helpers');
+const getTime = helpers.getTime;
 
 
 const asosFetch = async () => {
   const shopName = 'asos';
-  console.log(`${shopName} scraping started...`);
+  console.log(`${getTime()} - ${shopName} scraping started...`);
 
   const {browser, page} = await helpers.initBrowser();
 
   try {
     await page.goto(config.asosUrl, {waitUntil: 'networkidle0'});
 
-    console.log(`${new Date().toLocaleTimeString()} connected to page`);
+    console.log(`${getTime()} - connected to page`);
     let showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
     let clickCounter = 0;
     while (showMoreBtn && clickCounter < 30) {
       await showMoreBtn.evaluate(btn => btn.click());
-      console.log(`${new Date().toLocaleTimeString()} more button clicked`);
+      console.log(`${getTime()} - more button clicked`);
       await page.waitFor(1500);
       showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
       clickCounter++;
     }
 
-    console.log(`${new Date().toLocaleTimeString()} all products loaded`);
+    console.log(`${getTime()} - all products loaded`);
     // Scroll back to top
     await page.evaluate(_ => {
       window.scrollTo(0, 0);
@@ -36,7 +37,7 @@ const asosFetch = async () => {
     const {height} = await bodyHandle.boundingBox();
     await bodyHandle.dispose();
 
-    console.log(`${new Date().toLocaleTimeString()} scrolling bottom`);
+    console.log(`${getTime()} - scrolling bottom`);
     // Scroll one viewport at a time, pausing to let content load
     await helpers.scrollPageToBottom(page, height);
 
@@ -48,7 +49,7 @@ const asosFetch = async () => {
     // Some extra delay to let images load
     await helpers.wait(5000);
 
-    console.log(`${new Date().toLocaleTimeString()} parsing data`);
+    console.log(`${getTime()} - parsing data`);
     const html = await page.content();
     const products = $('[data-auto-id="productTile"]', html);
     await browser.close();
@@ -105,18 +106,18 @@ const endClothingFetch = async () => {
   try {
     await page.goto(config.endClothingUrl, {waitUntil: 'load'});
 
-    console.log(`${new Date().toLocaleTimeString()} connected to page`);
+    console.log(`${getTime()} - connected to page`);
     let showMoreBtn = await page.$('.sc-1j0b8up-0.Xpmnl');
     let clickCounter = 0;
     while (showMoreBtn && clickCounter < 30) {
       await showMoreBtn.evaluate(btn => btn.click());
-      console.log(`${new Date().toLocaleTimeString()} more button clicked`);
+      console.log(`${getTime()} - more button clicked`);
       await page.waitFor(1500);
       showMoreBtn = await page.$('.sc-1j0b8up-0.Xpmnl');
       clickCounter++;
     }
 
-    console.log(`${new Date().toLocaleTimeString()} all products loaded`);
+    console.log(`${getTime()} - all products loaded`);
     // Scroll back to top
     await page.evaluate(_ => {
       window.scrollTo(0, 0);
@@ -127,7 +128,7 @@ const endClothingFetch = async () => {
     const {height} = await bodyHandle.boundingBox();
     await bodyHandle.dispose();
 
-    console.log(`${new Date().toLocaleTimeString()} scrolling bottom`);
+    console.log(`${getTime()} - scrolling bottom`);
     // Scroll one viewport at a time, pausing to let content load
     await helpers.scrollPageToBottom(page, height);
 
@@ -139,7 +140,7 @@ const endClothingFetch = async () => {
     // Some extra delay to let images load
     await helpers.wait(5000);
 
-    console.log(`${new Date().toLocaleTimeString()} parsing data`);
+    console.log(`${getTime()} - parsing data`);
     const html = await page.content();
     const products = $('.sc-1koxpgo-0.bTJixI.sc-5sgtnq-2.gHSLMJ', html);
     await browser.close();
@@ -190,21 +191,21 @@ const endClothingFetch = async () => {
 
 const yooxFetch = async () => {
   const shopName = 'yoox';
-  console.log(`${new Date().toLocaleTimeString()} ${shopName} scraping started...`);
+  console.log(`${getTime()} - ${shopName} scraping started...`);
 
   const {browser, page} = await helpers.initBrowser();
 
   try {
     await page.goto(config.yooxUrl, {waitUntil: 'load', timeout: 120000});
 
-    console.log(`${new Date().toLocaleTimeString()} connected to page`);
+    console.log(`${getTime()} - connected to page`);
     const moreBtnSelector = '.pure-menu-item.nextPage';
     const productNodes = [];
     let showMoreBtn = await page.$(moreBtnSelector);
     let clickCounter = 0;
     // TODO: refactor it
     do {
-      console.log(`${new Date().toLocaleTimeString()} more button clicked`);
+      console.log(`${getTime()} - more button clicked`);
 
       await page.evaluate(_ => {
         window.scrollTo(0, 0);
@@ -215,7 +216,7 @@ const yooxFetch = async () => {
       const {height} = await bodyHandle.boundingBox();
       await bodyHandle.dispose();
 
-      console.log(`${new Date().toLocaleTimeString()} scrolling bottom`);
+      console.log(`${getTime()} - scrolling bottom`);
       // Scroll one viewport at a time, pausing to let content load
       await helpers.scrollPageToBottom(page, height);
 
@@ -227,7 +228,7 @@ const yooxFetch = async () => {
       // Some extra delay to let images load
       await helpers.wait(5000);
 
-      console.log(`${new Date().toLocaleTimeString()} parsing data`);
+      console.log(`${getTime()} - parsing data`);
       const html = await page.content();
       const products = $('.itemContainer', html).get();
       productNodes.push(...products);
@@ -240,7 +241,7 @@ const yooxFetch = async () => {
       }
     } while (showMoreBtn && clickCounter < 30);
 
-    console.log(`${new Date().toLocaleTimeString()} all products loaded`);
+    console.log(`${getTime()} - all products loaded`);
     // Scroll back to top
     await browser.close();
 

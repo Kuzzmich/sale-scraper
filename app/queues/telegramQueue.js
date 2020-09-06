@@ -19,14 +19,14 @@ const telegramMessageQueue = new Queue(
 
 telegramMessageQueue.process(async (job, done) => {
   try {
-    console.log('sending message');
+    console.log(`${getTime()} - sending message`);
     const message = job.data;
     await services.sendTelegramMediaGroup(message.products);
-    console.log('message is sent');
+    console.log(`${getTime()} - message is sent`);
     done();
   } catch (e) {
     Sentry.captureException(e);
-    console.log('message sending error');
+    console.log(`${getTime()} - message sending error`);
     console.error(e);
     done(e)
   }

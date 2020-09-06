@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const userAgent = require('user-agents');
+const moment = require('moment');
 
 
 const wait = (ms) => {
@@ -42,9 +43,14 @@ const generateTelegramMessageText = (product) => {
     + `Магазин - ${product.shop.toUpperCase()}\n`
 };
 
+const getTime = () => {
+  return moment().format('HH:mm:ss');
+};
+
 module.exports = {
   wait,
   initBrowser,
   scrollPageToBottom,
-  generateTelegramMessageText
+  generateTelegramMessageText,
+  getTime
 };
