@@ -53,5 +53,5 @@ const yoox = async (sendNotification) => {
 module.exports = {
   asos,
   endClothing,
-  // yoox,
+  yoox,
 };

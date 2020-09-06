@@ -13,7 +13,7 @@ const asosFetch = async () => {
   const {browser, page} = await helpers.initBrowser();
 
   try {
-    await page.goto(config.asosUrl, {waitUntil: 'networkidle0'});
+    await page.goto(config.asosUrl, {waitUntil: 'networkidle0', timeout: 60000});
 
     console.log(`${getTime()} - connected to page`);
     let showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
@@ -104,7 +104,7 @@ const endClothingFetch = async () => {
   const {browser, page} = await helpers.initBrowser();
 
   try {
-    await page.goto(config.endClothingUrl, {waitUntil: 'load'});
+    await page.goto(config.endClothingUrl, {waitUntil: 'load', timeout: 60000});
 
     console.log(`${getTime()} - connected to page`);
     let showMoreBtn = await page.$('.sc-1j0b8up-0.Xpmnl');
@@ -196,7 +196,15 @@ const yooxFetch = async () => {
   const {browser, page} = await helpers.initBrowser();
 
   try {
-    await page.goto(config.yooxUrl, {waitUntil: 'load', timeout: 120000});
+    await page.goto(config.yooxUrl, {
+      waitUntil: [
+        'load',
+        'domcontentloaded',
+        'networkidle0',
+        'networkidle2'
+      ],
+      timeout: 60000
+    });
 
     console.log(`${getTime()} - connected to page`);
     const moreBtnSelector = '.pure-menu-item.nextPage';
@@ -205,8 +213,6 @@ const yooxFetch = async () => {
     let clickCounter = 0;
     // TODO: refactor it
     do {
-      console.log(`${getTime()} - more button clicked`);
-
       await page.evaluate(_ => {
         window.scrollTo(0, 0);
       });
@@ -237,6 +243,7 @@ const yooxFetch = async () => {
       clickCounter++;
       if (showMoreBtn) {
         await showMoreBtn.evaluate(btn => btn.click());
+        console.log(`${getTime()} - more button clicked`);
         await page.waitFor(3000);
       }
     } while (showMoreBtn && clickCounter < 30);

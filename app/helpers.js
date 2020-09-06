@@ -11,6 +11,7 @@ const initBrowser = async () => {
   const browser = await puppeteer.launch({
     headless: true,
     executablePath: process.env.CHROME_BIN || null,
+    ignoreHTTPSErrors: true,
     args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']
   });
   const page = await browser.newPage();

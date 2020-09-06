@@ -22,7 +22,7 @@ httpServer.listen(port, function () {
     console.log('Listening on port %d', httpServer.address().port);
 });
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV) {
   scrapingQueue.startScraping();
 }
 
