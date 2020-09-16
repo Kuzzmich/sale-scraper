@@ -8,7 +8,7 @@ const getTime = helpers.getTime;
 
 const asosFetch = async () => {
   const shopName = 'asos';
-  console.log(`${getTime()} - ${shopName} scraping started...`);
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
   const {browser, page} = await helpers.initBrowser();
 
@@ -99,7 +99,7 @@ const asosFetch = async () => {
 
 const endClothingFetch = async () => {
   const shopName = 'end clothing';
-  console.log(`${shopName} scraping started...`);
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
   const {browser, page} = await helpers.initBrowser();
 
@@ -191,7 +191,7 @@ const endClothingFetch = async () => {
 
 const yooxFetch = async () => {
   const shopName = 'yoox';
-  console.log(`${getTime()} - ${shopName} scraping started...`);
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
   const {browser, page} = await helpers.initBrowser();
 
@@ -299,8 +299,119 @@ const yooxFetch = async () => {
 
 };
 
+const farfetchFetch = async () => {
+  const shopName = 'farfetch';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.farfetchUrl, {
+      waitUntil: [
+        'load',
+        'domcontentloaded',
+        'networkidle0',
+        'networkidle2'
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+    const moreBtnSelector = '._cc1815._b4b5fa._e7b42f:not(._a0a0a4)';
+    const productNodes = [];
+    let showMoreBtn = null;
+    let clickCounter = 0;
+
+    do {
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Get the height of the rendered page
+      const bodyHandle = await page.$('[data-test="product-card-list"]');
+      const {height} = await bodyHandle.boundingBox();
+      await bodyHandle.dispose();
+
+      console.log(`${getTime()} - scrolling bottom`);
+      // Scroll one viewport at a time, pausing to let content load
+      await helpers.scrollPageToBottom(page, height);
+
+      // Scroll back to top
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Some extra delay to let images load
+      await helpers.wait(5000);
+
+      console.log(`${getTime()} - parsing data`);
+      const html = await page.content();
+      const products = $('[data-test="productCard"]', html).get();
+      productNodes.push(...products);
+
+      showMoreBtn = await page.$(moreBtnSelector);
+      clickCounter++;
+      if (showMoreBtn) {
+        await showMoreBtn.evaluate(btn => btn.click());
+        console.log(`${getTime()} - more button clicked`);
+        await page.waitFor(3000);
+      }
+    } while (showMoreBtn && clickCounter < 30);
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    const parsedProductsList = $(productNodes).map((i, p) => {
+      const farfetchDomen = 'https://www.farfetch.com';
+
+      const url = farfetchDomen + $(p).find('a._5ce6f6').attr('href');
+      const brand = $(p).find('[data-test="productDesignerName"]').text().trim();
+      const title = $(p).find('[data-test="productDescription"]').text().trim();
+      const name = `${brand} ${title}`;
+      const oldPrice = parseFloat($(p).find('[data-test="initialPrice"]').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      const newPrice = parseFloat($(p).find('[data-test="price"]').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = $(p).find('img[itemprop="image"]').attr('src');
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+
+};
+
 module.exports = {
   asosFetch,
   endClothingFetch,
-  yooxFetch
+  yooxFetch,
+  farfetchFetch
 };

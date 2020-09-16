@@ -7,18 +7,22 @@
     "start": "NODE_ENV=production node app.js"
   },
   "dependencies": {
+    "@cliqz/adblocker-puppeteer": "^1.18.3",
     "@sentry/node": "5.20.1",
     "axios": "^0.19.2",
     "bull": "^3.18.0",
     "cheerio": "^1.0.0-rc.3",
     "config": "^3.3.1",
     "cors": "^2.8.5",
+    "cross-fetch": "^3.0.6",
     "express": "4.x",
     "file-type": "^14.7.1",
     "moment": "^2.27.0",
     "mongodb": "^3.6.0",
     "node-telegram-bot-api": "^0.50.0",
     "puppeteer": "^5.2.1",
+    "puppeteer-extra": "^3.1.15",
+    "puppeteer-extra-plugin-stealth": "^2.6.1",
     "raven": "^2.6.3",
     "user-agents": "^1.0.559"
   },

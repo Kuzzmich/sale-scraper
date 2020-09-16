@@ -20,6 +20,11 @@ module.exports = (app) => {
     res.send('hello puppeteer');
   });
 
+  app.get('/farfetch', async (req, res) => {
+    await scrapers.farfetch(false);
+    res.send('hello puppeteer');
+  });
+
   app.get('/restart-scraping', async (req, res) => {
     await scrapingQueue.queue.pause();
     await scrapingQueue.queue.empty();

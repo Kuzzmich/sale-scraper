@@ -50,8 +50,21 @@ const yoox = async (sendNotification) => {
   console.log(`${getTime()} - YOOX scraping finished!`);
 };
 
+const farfetch = async (sendNotification) => {
+  const parsedProductsList = await parsers.farfetchFetch();
+  const insertedProducts = await services.syncProductsCollection(parsedProductsList);
+
+  if (sendNotification && insertedProducts.length) {
+    await sendNotifications(insertedProducts);
+  }
+
+  console.log(`${getTime()} - inserted products length: ${insertedProducts.length}`);
+  console.log(`${getTime()} - FARFETCH scraping finished!`);
+};
+
 module.exports = {
   asos,
   endClothing,
   yoox,
+  farfetch
 };

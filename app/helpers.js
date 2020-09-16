@@ -1,4 +1,7 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const { PuppeteerBlocker } = require('@cliqz/adblocker-puppeteer');
+const fetch = require('cross-fetch');
 const userAgent = require('user-agents');
 const moment = require('moment');
 
@@ -8,13 +11,22 @@ const wait = (ms) => {
 };
 
 const initBrowser = async () => {
+  puppeteer.use(StealthPlugin());
+  const blocker = await PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch);
+
   const browser = await puppeteer.launch({
     headless: true,
     ignoreHTTPSErrors: true,
     args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']
   });
   const page = await browser.newPage();
+  page.on('request', request => Promise.resolve().then(() => request.continue()).catch(e => {}));
+  await page.setViewport({
+    width: 1920,
+    height: 1080
+  });
   await page.setUserAgent(userAgent.random().toString());
+  await blocker.enableBlockingInPage(page);
 
   return {browser, page};
 };
