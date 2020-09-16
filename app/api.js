@@ -1,27 +1,27 @@
 const config = require('config');
 const scrapingQueue = require('./queues/scrapingQueue');
 const services = require('./services');
-const scrapers = require('./scrapers');
+const scraper = require('./scraper');
 
 
 module.exports = (app) => {
   app.get('/asos', async (req, res) => {
-    await scrapers.asos(true);
+    await scraper.scrapeData('asos', true);
     res.send('hello puppeteer');
   });
 
   app.get('/end-clothing', async (req, res) => {
-    await scrapers.endClothing(true);
+    await scraper.scrapeData('endClothing',true);
     res.send('hello puppeteer');
   });
 
   app.get('/yoox', async (req, res) => {
-    await scrapers.yoox(false);
+    await scraper.scrapeData('yoox',false);
     res.send('hello puppeteer');
   });
 
   app.get('/farfetch', async (req, res) => {
-    await scrapers.farfetch(false);
+    await scraper.scrapeData('farfetch',false);
     res.send('hello puppeteer');
   });
 
@@ -37,8 +37,9 @@ module.exports = (app) => {
   app.get('/get-products', async (req, res, next) => {
     const client = await services.getMongoClient();
     const db = client.db(config.mongoDbName);
+    const count = 100;
     // TODO: optimize it by paging
-    const products = await db.collection(config.productsCollectionName).find().sort({
+    const products = await db.collection(config.productsCollectionName).find().limit(count).sort({
       timestamp: -1,
       discount: -1
     }).toArray();

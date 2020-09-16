@@ -6,7 +6,7 @@ const helpers = require('./helpers');
 const getTime = helpers.getTime;
 
 
-const asosFetch = async () => {
+const asos = async () => {
   const shopName = 'asos';
   console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
@@ -97,7 +97,7 @@ const asosFetch = async () => {
 
 };
 
-const endClothingFetch = async () => {
+const endClothing = async () => {
   const shopName = 'end clothing';
   console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
@@ -189,7 +189,7 @@ const endClothingFetch = async () => {
 
 };
 
-const yooxFetch = async () => {
+const yoox = async () => {
   const shopName = 'yoox';
   console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
@@ -299,7 +299,7 @@ const yooxFetch = async () => {
 
 };
 
-const farfetchFetch = async () => {
+const farfetch = async () => {
   const shopName = 'farfetch';
   console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
@@ -410,8 +410,8 @@ const farfetchFetch = async () => {
 };
 
 module.exports = {
-  asosFetch,
-  endClothingFetch,
-  yooxFetch,
-  farfetchFetch
+  asos,
+  endClothing,
+  yoox,
+  farfetch
 };

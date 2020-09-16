@@ -3,8 +3,8 @@ const Queue = require('bull');
 const Sentry = require("@sentry/node");
 Sentry.init({ dsn: config.sentryDsn });
 const { getTime } = require('../helpers');
-const scrapers = require('../scrapers');
-const scrapersList = Object.keys(scrapers);
+const scraper = require('../scraper');
+const parsersList = scraper.parsersList;
 
 
 const scrapingQueue = new Queue(
@@ -21,15 +21,15 @@ const scrapingQueue = new Queue(
 
 scrapingQueue.process(async (job, done) => {
   try {
-    const scraperName = job.data.scraperName;
-    await scrapers[scraperName](true);
+    const parserName = job.data.parserName;
+    await scraper.scrapeData(parserName,true);
 
-    const currentScraperIndex = scrapersList.findIndex(s => s === scraperName);
-    const nextScraper = scrapersList[currentScraperIndex + 1] || scrapersList[0];
+    const currentParserIndex = parsersList.findIndex(s => s === parserName);
+    const nextParser = parsersList[currentParserIndex + 1] || parsersList[0];
 
-    console.log(`${getTime()} - Posting new ${nextScraper.toUpperCase()} parsing job to queue`);
+    console.log(`${getTime()} - Posting new ${nextParser.toUpperCase()} parsing job to queue`);
     scrapingQueue.add(
-      {scraperName: nextScraper},
+      {parserName: nextParser},
       {delay: 180000, attemps: 1, removeOnComplete: true, removeOnFail: true}
     );
 
@@ -42,9 +42,9 @@ scrapingQueue.process(async (job, done) => {
 });
 
 const startScraping = () => {
-  const scraperName = scrapersList[0];
+  const parserName = parsersList[0];
   scrapingQueue.add(
-      {scraperName: scraperName},
+      {parserName: parserName},
       {delay: 3000, attemps: 1, removeOnComplete: true, removeOnFail: true}
     );
 };
