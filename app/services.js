@@ -2,6 +2,7 @@ const config = require('config');
 const MongoClient = require('mongodb').MongoClient;
 const axios = require('axios');
 const FileType = require('file-type');
+const moment = require('moment');
 const bot = require('./telegramBot');
 const helpers = require('./helpers');
 
@@ -23,7 +24,18 @@ const syncProductsCollection = async (productsList) => {
     return !!(!oldProduct || oldProduct && oldProduct.newPrice !== p.newPrice);
   });
 
-  const outOfDateProducts = oldProducts.filter((op) => !!!productsList.find(p => p.url === op.url));
+  const outOfDateProducts = oldProducts.filter((op) => {
+    const isNotInNewList = !productsList.find(p => p.url === op.url);
+    let isAddedLaterThanToday = false;
+    // if products were added yesterday or earlier
+    if (isNotInNewList) {
+      const today = moment().endOf('day');
+      const creationDate = moment(op.timestamp).endOf('day');
+      isAddedLaterThanToday = moment.duration(today.diff(creationDate)).asDays() > 0;
+    }
+
+    return isNotInNewList && isAddedLaterThanToday;
+  });
 
   if (filteredProducts.length) {
     // insert only new or updated products

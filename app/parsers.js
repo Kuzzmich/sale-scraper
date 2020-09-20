@@ -388,7 +388,7 @@ const farfetch = async () => {
       };
     })
       .get()
-      .filter(p => p.discount >= 20)
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
       .sort((a, b) => {
         if (a.discount > b.discount) {
           return -1;
