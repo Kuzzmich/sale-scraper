@@ -481,7 +481,7 @@ const lamoda = async () => {
       const newPrice = parseFloat($(p).find('.price__new').text().trim().replace(/ /g, '') || 0);
       let discount = 0;
       if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
-      const img = `https:${$(p).attr('data-rollover')}`;
+      const img = `https:${$(p).attr('data-src')}`;
       const timestamp = Date.now();
 
       return {
