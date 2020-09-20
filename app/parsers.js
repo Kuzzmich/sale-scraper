@@ -253,9 +253,9 @@ const yoox = async () => {
     await browser.close();
 
     const parsedProductsList = $(productNodes).map((i, p) => {
-      const endClothingDomen = 'https://www.yoox.com';
+      const endClothingDomain = 'https://www.yoox.com';
 
-      const url = endClothingDomen + $(p).find('a.itemlink').attr('href');
+      const url = endClothingDomain + $(p).find('a.itemlink').attr('href');
       const brand = $(p).find('.brand').text().trim();
       const title = $(p).find('.title').text().trim();
       const name = `${brand} ${title}`;
@@ -363,9 +363,9 @@ const farfetch = async () => {
     await browser.close();
 
     const parsedProductsList = $(productNodes).map((i, p) => {
-      const farfetchDomen = 'https://www.farfetch.com';
+      const farfetchDomain = 'https://www.farfetch.com';
 
-      const url = farfetchDomen + $(p).find('a._5ce6f6').attr('href');
+      const url = farfetchDomain + $(p).find('a._5ce6f6').attr('href');
       const brand = $(p).find('[data-test="productDesignerName"]').text().trim();
       const title = $(p).find('[data-test="productDescription"]').text().trim();
       const name = `${brand} ${title}`;
@@ -409,9 +409,118 @@ const farfetch = async () => {
 
 };
 
+const lamoda = async () => {
+  const shopName = 'lamoda';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.lamodaUrl, {
+      waitUntil: [
+        'load',
+        'domcontentloaded',
+        'networkidle0',
+        'networkidle2'
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+    const moreBtnSelector = 'span.paginator__next';
+    const productNodes = [];
+    let showMoreBtn = null;
+    let clickCounter = 0;
+
+    do {
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Get the height of the rendered page
+      const bodyHandle = await page.$('#vue-root');
+      const {height} = await bodyHandle.boundingBox();
+      await bodyHandle.dispose();
+
+      console.log(`${getTime()} - scrolling bottom`);
+      // Scroll one viewport at a time, pausing to let content load
+      await helpers.scrollPageToBottom(page, height);
+
+      // Scroll back to top
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Some extra delay to let images load
+      await helpers.wait(5000);
+
+      console.log(`${getTime()} - parsing data`);
+      const html = await page.content();
+      const products = $('.products-list-item', html).get();
+      productNodes.push(...products);
+
+      showMoreBtn = await page.$(moreBtnSelector);
+      clickCounter++;
+      if (showMoreBtn) {
+        await showMoreBtn.evaluate(btn => btn.click());
+        console.log(`${getTime()} - more button clicked`);
+        await page.waitFor(3000);
+      }
+    } while (showMoreBtn && clickCounter < 30);
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    const parsedProductsList = $(productNodes).map((i, p) => {
+      const lamodaDomain = 'https://www.lamoda.ru';
+
+      const url = lamodaDomain + $(p).find('a.products-list-item__link').attr('href');
+      const name = $(p).find('.products-list-item__brand').text().replace(/\n/g, '').split(' ').filter(s => s).join(' ');
+      const oldPrice = parseFloat($(p).find('.price__old').text().trim().replace(/ /g, '') || 0);
+      const newPrice = parseFloat($(p).find('.price__new').text().trim().replace(/ /g, '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = `https:${$(p).attr('data-rollover')}`;
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+
+};
+
 module.exports = {
   asos,
   endClothing,
   yoox,
-  farfetch
+  farfetch,
+  lamoda
 };

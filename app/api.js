@@ -5,23 +5,9 @@ const scraper = require('./scraper');
 
 
 module.exports = (app) => {
-  app.get('/asos', async (req, res) => {
-    await scraper.scrapeData('asos', true);
-    res.send('hello puppeteer');
-  });
-
-  app.get('/end-clothing', async (req, res) => {
-    await scraper.scrapeData('endClothing',true);
-    res.send('hello puppeteer');
-  });
-
-  app.get('/yoox', async (req, res) => {
-    await scraper.scrapeData('yoox',false);
-    res.send('hello puppeteer');
-  });
-
-  app.get('/farfetch', async (req, res) => {
-    await scraper.scrapeData('farfetch',false);
+  app.get('/parse/:parserName', async (req, res) => {
+    const parserName = req.params.parserName;
+    await scraper.scrapeData(parserName, true);
     res.send('hello puppeteer');
   });
 
