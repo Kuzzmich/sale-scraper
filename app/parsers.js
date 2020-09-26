@@ -630,11 +630,124 @@ const rendezVous = async () => {
   }
 };
 
+const superstep = async () => {
+  const shopName = 'superstep';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.superstepUrl, {
+      waitUntil: [
+        // 'load',
+        'domcontentloaded',
+        // 'networkidle0',
+        // 'networkidle2'
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+    const moreBtnSelector = 'a.pagiation-arrow.next';
+    const productNodes = [];
+    let showMoreBtn = null;
+    let clickCounter = 0;
+
+    do {
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Get the height of the rendered page
+      const bodyHandle = await page.$('div.js-main-wrapper');
+      const {height} = await bodyHandle.boundingBox();
+      await bodyHandle.dispose();
+
+      console.log(`${getTime()} - scrolling bottom`);
+      // Scroll one viewport at a time, pausing to let content load
+      await helpers.scrollPageToBottom(page, height);
+
+      // Scroll back to top
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Some extra delay to let images load
+      await helpers.wait(5000);
+
+      console.log(`${getTime()} - parsing data`);
+      const html = await page.content();
+      const products = $('div.product-item-wrapper', html).get();
+      productNodes.push(...products);
+
+      showMoreBtn = await page.$(moreBtnSelector);
+      clickCounter++;
+      if (showMoreBtn) {
+        await showMoreBtn.evaluate(btn => btn.click());
+        console.log(`${getTime()} - more button clicked`);
+        await page.waitForNavigation({
+          waitUntil: 'domcontentloaded',
+        });
+      }
+    } while (showMoreBtn && clickCounter < 30);
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    let parsedProductsList = $(productNodes).map((i, p) => {
+      const superstepDomain = 'https://superstep.ru';
+
+      const url = superstepDomain + $(p).find('.product-image-wrapper > a').attr('href');
+      const nameNode = $(p).find('.product-name');
+      nameNode.find('br').replaceWith(' ');
+      const name = nameNode.text().trim().split(' ').filter(s => s).join(' ');
+      const oldPrice = parseFloat($(p).find('.product-list-price').text().replace('Руб.', '').replace(' ', '').trim() || 0);
+      const newPrice = parseFloat($(p).find('.product-sale-price').text().replace('Руб.', '').replace(' ', '').trim() || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = `${superstepDomain}${$(p).find('.product-image-wrapper img.product-item-image').attr('src')}`;
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+};
+
 module.exports = {
   asos,
   endClothing,
   yoox,
   farfetch,
   lamoda,
-  rendezVous
+  rendezVous,
+  superstep
 };
