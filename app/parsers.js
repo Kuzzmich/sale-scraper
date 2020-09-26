@@ -1,5 +1,6 @@
 const config = require('config');
 const $ = require('cheerio');
+const _ = require('lodash');
 const Sentry = require("@sentry/node");
 Sentry.init({dsn: config.sentryDsn});
 const helpers = require('./helpers');
@@ -54,7 +55,7 @@ const asos = async () => {
     const products = $('[data-auto-id="productTile"]', html);
     await browser.close();
 
-    const parsedProductsList = $(products).map((i, p) => {
+    let parsedProductsList = $(products).map((i, p) => {
       const link = p.children[0];
       const url = link.attribs.href;
       const name = $(p.children[0].children[1]).text();
@@ -86,6 +87,7 @@ const asos = async () => {
         }
         return 0;
       });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
 
     return parsedProductsList;
   } catch (e) {
@@ -145,7 +147,7 @@ const endClothing = async () => {
     const products = $('.sc-1koxpgo-0.bTJixI.sc-5sgtnq-2.gHSLMJ', html);
     await browser.close();
 
-    const parsedProductsList = $(products).map((i, p) => {
+    let parsedProductsList = $(products).map((i, p) => {
       const endClothingDomen = 'https://www.endclothing.com';
 
       const url = endClothingDomen + $(p).attr('href');
@@ -178,6 +180,7 @@ const endClothing = async () => {
         }
         return 0;
       });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
 
     return parsedProductsList;
   } catch (e) {
@@ -252,7 +255,7 @@ const yoox = async () => {
     // Scroll back to top
     await browser.close();
 
-    const parsedProductsList = $(productNodes).map((i, p) => {
+    let parsedProductsList = $(productNodes).map((i, p) => {
       const endClothingDomain = 'https://www.yoox.com';
 
       const url = endClothingDomain + $(p).find('a.itemlink').attr('href');
@@ -288,6 +291,7 @@ const yoox = async () => {
         }
         return 0;
       });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
 
     return parsedProductsList;
   } catch (e) {
@@ -362,7 +366,7 @@ const farfetch = async () => {
     // Scroll back to top
     await browser.close();
 
-    const parsedProductsList = $(productNodes).map((i, p) => {
+    let parsedProductsList = $(productNodes).map((i, p) => {
       const farfetchDomain = 'https://www.farfetch.com';
 
       const url = farfetchDomain + $(p).find('a._5ce6f6').attr('href');
@@ -398,6 +402,7 @@ const farfetch = async () => {
         }
         return 0;
       });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
 
     return parsedProductsList;
   } catch (e) {
@@ -472,7 +477,7 @@ const lamoda = async () => {
     // Scroll back to top
     await browser.close();
 
-    const parsedProductsList = $(productNodes).map((i, p) => {
+    let parsedProductsList = $(productNodes).map((i, p) => {
       const lamodaDomain = 'https://www.lamoda.ru';
 
       const url = lamodaDomain + $(p).find('a.products-list-item__link').attr('href');
@@ -506,6 +511,7 @@ const lamoda = async () => {
         }
         return 0;
       });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
 
     return parsedProductsList;
   } catch (e) {
@@ -514,7 +520,6 @@ const lamoda = async () => {
     console.log(e);
     return [];
   }
-
 };
 
 module.exports = {
