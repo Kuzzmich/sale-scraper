@@ -742,6 +742,114 @@ const superstep = async () => {
   }
 };
 
+const sneakerhead = async () => {
+  const shopName = 'sneakerhead';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.sneakerheadUrl, {
+      waitUntil: [
+        'domcontentloaded',
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+    const productNodes = [];
+    let showMoreBtn = null;
+    let clickCounter = 0;
+
+    do {
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Get the height of the rendered page
+      const bodyHandle = await page.$('div.catalog');
+      const {height} = await bodyHandle.boundingBox();
+      await bodyHandle.dispose();
+
+      console.log(`${getTime()} - scrolling bottom`);
+      // Scroll one viewport at a time, pausing to let content load
+      await helpers.scrollPageToBottom(page, height);
+
+      // Scroll back to top
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Some extra delay to let images load
+      await helpers.wait(5000);
+
+      console.log(`${getTime()} - parsing data`);
+      const html = await page.content();
+      const products = $('div.product-cards__item', html).get();
+      productNodes.push(...products);
+
+      const paginationLinks = await page.$$('.pagination > .links a');
+      const nextBtnText = await page.evaluate(element => element.textContent, paginationLinks[paginationLinks.length - 2] || {});
+      if (isNaN(parseInt(nextBtnText))) showMoreBtn = paginationLinks[paginationLinks.length - 2];
+      clickCounter++;
+      if (showMoreBtn) {
+        await showMoreBtn.evaluate(btn => btn.click());
+        console.log(`${getTime()} - more button clicked`);
+        await page.waitForNavigation({
+          waitUntil: 'domcontentloaded',
+        });
+      }
+    } while (showMoreBtn && clickCounter < 1);
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    let parsedProductsList = $(productNodes).map((i, p) => {
+      const sneakerheadDomain = 'https://sneakerhead.ru';
+
+      const url = sneakerheadDomain + $(p).find('a.product-card__link').attr('href');
+      const name = $(p).find('.product-card__title').text().trim();
+      const oldPrice = parseFloat($(p).find('.product-card__price-value--old').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      const newPrice = parseFloat($(p).find('.product-card__price-value:not(.product-card__price-value--old)').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = sneakerheadDomain + $(p).find('source').attr('data-src');
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+};
+
 module.exports = {
   asos,
   endClothing,
@@ -749,5 +857,6 @@ module.exports = {
   farfetch,
   lamoda,
   rendezVous,
-  superstep
+  superstep,
+  sneakerhead
 };
