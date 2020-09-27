@@ -945,6 +945,114 @@ const nike = async () => {
   }
 };
 
+const reebok = async () => {
+  const shopName = 'reebok';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.reebokUrl, {
+      waitUntil: [
+        'load',
+        'domcontentloaded',
+        'networkidle0',
+        'networkidle2'
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+    const moreBtnSelector = '[data-auto-id="pagination-right-button"]';
+    const productNodes = [];
+    let showMoreBtn = null;
+    let clickCounter = 0;
+
+    do {
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Get the height of the rendered page
+      const bodyHandle = await page.$('#app');
+      const {height} = await bodyHandle.boundingBox();
+      await bodyHandle.dispose();
+
+      console.log(`${getTime()} - scrolling bottom`);
+      // Scroll one viewport at a time, pausing to let content load
+      await helpers.scrollPageToBottom(page, height);
+
+      // Scroll back to top
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Some extra delay to let images load
+      await helpers.wait(5000);
+
+      console.log(`${getTime()} - parsing data`);
+      const html = await page.content();
+      const products = $('.gl-product-card', html).get();
+      productNodes.push(...products);
+
+      showMoreBtn = await page.$(moreBtnSelector);
+      clickCounter++;
+      if (showMoreBtn) {
+        await showMoreBtn.evaluate(btn => btn.click());
+        console.log(`${getTime()} - more button clicked`);
+        await page.waitFor(3000);
+      }
+    } while (showMoreBtn && clickCounter < 30);
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    let parsedProductsList = $(productNodes).map((i, p) => {
+      const reebokDomain = 'https://www.reebok.ru';
+
+      const url = reebokDomain + $(p).find('a.gl-product-card__assets-link').attr('href');
+      const name = $(p).find('.gl-product-card__name').text().trim();
+      const oldPrice = parseFloat($(p).find('.gl-price__value--crossed').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
+      const newPrice = parseFloat($(p).find('.gl-price__value--sale').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = $(p).find('[data-auto-id="image"]').attr('src');
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+};
+
 module.exports = {
   asos,
   endClothing,
@@ -954,5 +1062,6 @@ module.exports = {
   rendezVous,
   superstep,
   sneakerhead,
-  nike
+  nike,
+  reebok
 };

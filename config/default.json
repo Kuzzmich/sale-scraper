@@ -8,6 +8,7 @@
   "superstepUrl": "https://superstep.ru/sale/?arrFilter_P9_MIN=&arrFilter_P9_MAX=&arrFilter_107_95876792=Y&arrFilter_141_2730626500=Y&arrFilter_141_3676327647=Y&arrFilter_141_3108966676=Y&arrFilter_141_1837302325=Y&arrFilter_141_2944714148=Y&arrFilter_141_107644984=Y&arrFilter_141_4071067935=Y&arrFilter_141_3646169747=Y&arrFilter_141_368416690=Y&arrFilter_118_3693793700=Y&arrFilter_118_668113013=Y&arrFilter_118_2871910706=Y&arrFilter_118_638644802=Y&arrFilter_118_841265288=Y&arrFilter_118_609635355=Y&arrFilter_118_1159954462=Y&arrFilter_118_630466092=Y&arrFilter_118_3678868925=Y&set_filter=Y",
   "sneakerheadUrl": "https://sneakerhead.ru/sale/shoes/sneakers/adidas-originals-or-asics-or-diadora-or-jordan-or-new-balance-or-nike-or-puma-or-reebok-or-saucony/men/size-40-or-size-40_5-or-size-41-or-size-42-or-size-42_5-or-size-43-or-size-44_5/",
   "nikeUrl": "https://www.nike.com/ru/w/mens-sale-lifestyle-shoes-13jrmz2eqihz38l5kz3yaepz4heq9z5k5r2z6fvtlz79n0gz8ucbuz9q5rqznik1zqrpuzstp2zy7ok",
+  "reebokUrl": "https://www.reebok.ru/muzhchiny-obuv-outlet?v_size_ru_ru=40%7C40.5%7C41%7C42%7C42.5%7C43%7C44",
   "mongoConnectionString": "mongodb+srv://admin:Kuzzmich26rus@cluster0.1twre.mongodb.net/sale-products?retryWrites=true&w=majority",
   "mongoDbName": "sale-products",
   "productsCollectionName": "products",
