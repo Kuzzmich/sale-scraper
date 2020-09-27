@@ -850,6 +850,101 @@ const sneakerhead = async () => {
   }
 };
 
+const nike = async () => {
+  const shopName = 'nike';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.nikeUrl, {
+      waitUntil: [
+        'load',
+        'domcontentloaded',
+        'networkidle0',
+        'networkidle2'
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+
+    // Get the height of the rendered page
+    const bodyHandle = await page.$('#react-root');
+    let {height} = await bodyHandle.boundingBox();
+    let newHeight = height;
+    await bodyHandle.dispose();
+
+    do {
+      // Scroll one viewport at a time, pausing to let content load
+      console.log(`${getTime()} - scrolling bottom`);
+      height = newHeight;
+      await helpers.scrollPageToBottom(page, height);
+      await page.waitFor(3000);
+      const bodyHandle = await page.$('#react-root');
+      newHeight = (await bodyHandle.boundingBox()).height;
+      await bodyHandle.dispose();
+    } while (newHeight > height);
+
+    // Scroll back to top
+    await page.evaluate(_ => {
+      window.scrollTo(0, 0);
+    });
+
+    // Some extra delay to let images load
+    await helpers.wait(5000);
+
+    console.log(`${getTime()} - parsing data`);
+    const html = await page.content();
+    const productNodes = $('.product-card__body', html).get();
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    let parsedProductsList = $(productNodes).map((i, p) => {
+      const url = $(p).find('a.product-card__link-overlay').attr('href');
+      const name = $(p).find('a.product-card__link-overlay').text().trim();
+      const oldPrice = parseFloat($(p).find('.product-price:not(.is--current-price)').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      const newPrice = parseFloat($(p).find('.product-price.is--current-price').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = $(p).find('source').attr('srcset');
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+};
+
 module.exports = {
   asos,
   endClothing,
@@ -858,5 +953,6 @@ module.exports = {
   lamoda,
   rendezVous,
   superstep,
-  sneakerhead
+  sneakerhead,
+  nike
 };
