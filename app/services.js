@@ -64,7 +64,7 @@ const sendTelegramNotification = async (insertedProducts) => {
 
 const sendTelegramMediaGroup = async (insertedProducts) => {
   const message = await Promise.all(insertedProducts.map(async p => {
-    const imageRes = await axios(p.img, { responseType: 'arraybuffer' });
+    const imageRes = await axios(encodeURI(p.img), { responseType: 'arraybuffer' });
     const image = imageRes.data;
     const fileType = await FileType.fromBuffer(image);
 
