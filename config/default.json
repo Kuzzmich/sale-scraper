@@ -10,6 +10,7 @@
   "nikeUrl": "https://www.nike.com/ru/w/mens-sale-lifestyle-shoes-13jrmz2eqihz38l5kz3yaepz4heq9z5k5r2z6fvtlz79n0gz8ucbuz9q5rqznik1zqrpuzstp2zy7ok",
   "reebokUrl": "https://www.reebok.ru/muzhchiny-obuv-outlet?v_size_ru_ru=40%7C40.5%7C41%7C42%7C42.5%7C43%7C44",
   "adidasUrl": "https://www.adidas.ru/muzhchiny-obuv-rasprodazha?v_size_ru_ru=40%7C40.5%7C41%7C42%7C42.5%7C43%7C44%7C44.5%7C45",
+  "pumaUrl": "https://ru.puma.com/skidki/muzhchiny/obuv.html?p=2&size=798%2C799%2C801%2C2093%2C2101%2C2102%2C2104",
   "mongoConnectionString": "mongodb+srv://admin:Kuzzmich26rus@cluster0.1twre.mongodb.net/sale-products?retryWrites=true&w=majority",
   "mongoDbName": "sale-products",
   "productsCollectionName": "products",

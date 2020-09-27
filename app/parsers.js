@@ -799,7 +799,7 @@ const sneakerhead = async () => {
           waitUntil: 'domcontentloaded',
         });
       }
-    } while (showMoreBtn && clickCounter < 1);
+    } while (showMoreBtn && clickCounter < 30);
 
     console.log(`${getTime()} - all products loaded`);
     // Scroll back to top
@@ -874,6 +874,7 @@ const nike = async () => {
     let {height} = await bodyHandle.boundingBox();
     let newHeight = height;
     await bodyHandle.dispose();
+    let clickCounter = 0;
 
     do {
       // Scroll one viewport at a time, pausing to let content load
@@ -884,7 +885,8 @@ const nike = async () => {
       const bodyHandle = await page.$('#react-root');
       newHeight = (await bodyHandle.boundingBox()).height;
       await bodyHandle.dispose();
-    } while (newHeight > height);
+      clickCounter++;
+    } while (newHeight > height && clickCounter < 30);
 
     // Scroll back to top
     await page.evaluate(_ => {
@@ -1161,6 +1163,109 @@ const adidas = async () => {
   }
 };
 
+const puma = async () => {
+  const shopName = 'puma';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser();
+
+  try {
+    await page.goto(config.pumaUrl, {
+      waitUntil: [
+        'load',
+        'domcontentloaded',
+        'networkidle0',
+        'networkidle2'
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+
+    // Get the height of the rendered page
+    const bodyHandle = await page.$('[data-container="body"]');
+    let {height} = await bodyHandle.boundingBox();
+    let newHeight = height;
+    await bodyHandle.dispose();
+
+    const showAllBtn = await page.$('.btn.btn_red.btn-pager');
+    if (showAllBtn) {
+      await showAllBtn.evaluate(btn => btn.click());
+      await page.waitFor(3000);
+    }
+    let clickCounter = 0;
+
+    do {
+      // Scroll one viewport at a time, pausing to let content load
+      console.log(`${getTime()} - scrolling bottom`);
+      height = newHeight;
+      await helpers.scrollPageToBottom(page, height);
+      await page.waitFor(3000);
+      const bodyHandle = await page.$('[data-container="body"]');
+      newHeight = (await bodyHandle.boundingBox()).height;
+      await bodyHandle.dispose();
+      clickCounter++;
+    } while (newHeight > height && clickCounter < 30);
+
+    // Scroll back to top
+    await page.evaluate(_ => {
+      window.scrollTo(0, 0);
+    });
+
+    // Some extra delay to let images load
+    await helpers.wait(5000);
+
+    console.log(`${getTime()} - parsing data`);
+    const html = await page.content();
+    const productNodes = $('.product-item', html).get();
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    let parsedProductsList = $(productNodes).map((i, p) => {
+      const url = $(p).find('a.product-item__img-w').attr('href');
+      const name = $(p).find('a.product-item__name').text().trim();
+      const oldPrice = parseFloat($(p).find('[data-price-type="oldPrice"]').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      const newPrice = parseFloat($(p).find('[data-price-type="finalPrice"]').text().trim().replace(/ |₽|[^\x00-\x7F]/g, '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = $(p).find('.product-item__img').attr('src');
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    Sentry.captureException(e);
+    console.log(e);
+    return [];
+  }
+};
+
 module.exports = {
   asos,
   endClothing,
@@ -1173,4 +1278,5 @@ module.exports = {
   nike,
   reebok,
   adidas,
+  puma
 };
