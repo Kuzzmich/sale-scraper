@@ -1013,7 +1013,8 @@ const reebok = async () => {
     let parsedProductsList = $(productNodes).map((i, p) => {
       const reebokDomain = 'https://www.reebok.ru';
 
-      const url = reebokDomain + $(p).find('a.gl-product-card__assets-link').attr('href');
+      let url = $(p).find('a.gl-product-card__assets-link').attr('href');
+      if (!url.includes(reebokDomain)) url = reebokDomain + url;
       const name = $(p).find('.gl-product-card__name').text().trim();
       const oldPrice = parseFloat($(p).find('.gl-price__value--crossed').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
       const newPrice = parseFloat($(p).find('.gl-price__value--sale').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
@@ -1119,9 +1120,10 @@ const adidas = async () => {
     await browser.close();
 
     let parsedProductsList = $(productNodes).map((i, p) => {
-      const reebokDomain = 'https://www.adidas.ru';
+      const adidasDomain = 'https://www.adidas.ru';
 
-      const url = reebokDomain + $(p).find('a.gl-product-card__assets-link').attr('href');
+      let url = $(p).find('a.gl-product-card__assets-link').attr('href');
+      if (!url.includes(adidasDomain)) url = adidasDomain + url;
       const name = $(p).find('.gl-product-card__name').text().trim();
       const oldPrice = parseFloat($(p).find('.gl-price__value--crossed').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
       const newPrice = parseFloat($(p).find('.gl-price__value--sale').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
