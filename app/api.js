@@ -34,7 +34,7 @@ module.exports = (app) => {
       };
     }
 
-    const products = await db.collection(config.productsCollectionName).find(searchQuery).limit(count).skip(100 * page).sort({
+    const products = await db.collection(config.productsCollectionName).find(searchQuery).limit(count).skip(100 * (page - 1)).sort({
       timestamp: -1,
       discount: -1
     }).toArray();
