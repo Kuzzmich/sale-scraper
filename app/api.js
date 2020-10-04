@@ -24,8 +24,17 @@ module.exports = (app) => {
     const client = await services.getMongoClient();
     const db = client.db(config.mongoDbName);
     const count = 100;
-    // TODO: optimize it by paging
-    const products = await db.collection(config.productsCollectionName).find().limit(count).sort({
+    const page = parseInt(req.query.page || 0);
+    const query = req.query.q || '';
+    const searchQuery = {};
+    if (query) {
+      searchQuery.name = {
+        $regex: `.*${query}.*`,
+        $options: 'i'
+      };
+    }
+
+    const products = await db.collection(config.productsCollectionName).find(searchQuery).limit(count).skip(100 * page).sort({
       timestamp: -1,
       discount: -1
     }).toArray();
