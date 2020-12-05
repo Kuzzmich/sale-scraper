@@ -1125,8 +1125,8 @@ const adidas = async () => {
       let url = $(p).find('a.gl-product-card__assets-link').attr('href');
       if (url && !url.includes(adidasDomain)) url = adidasDomain + url;
       const name = $(p).find('.gl-product-card__name').text().trim();
-      const oldPrice = parseFloat($(p).find('.gl-price__value--crossed').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
-      const newPrice = parseFloat($(p).find('.gl-price__value--sale').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
+      const oldPrice = parseFloat($(p).find('.gl-price-item--crossed').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
+      const newPrice = parseFloat($(p).find('.gl-price-item--sale').text().trim().replace(/ |р\.|[^\x00-\x7F]/g, '') || 0);
       let discount = 0;
       if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
       const img = $(p).find('[data-auto-id="image"]').attr('src') || $(p).find('[data-auto-id="fallback"]').attr('src');
