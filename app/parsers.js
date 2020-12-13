@@ -92,6 +92,7 @@ const asos = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -185,6 +186,7 @@ const endClothing = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -296,6 +298,7 @@ const yoox = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -407,6 +410,7 @@ const farfetch = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -516,6 +520,7 @@ const lamoda = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -624,6 +629,7 @@ const rendezVous = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -736,6 +742,7 @@ const superstep = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -844,6 +851,7 @@ const sneakerhead = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -941,6 +949,7 @@ const nike = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -1050,6 +1059,7 @@ const reebok = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -1159,6 +1169,7 @@ const adidas = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
@@ -1262,6 +1273,7 @@ const puma = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
+    Sentry.setContext('parser', { name: shopName });
     Sentry.captureException(e);
     console.log(e);
     return [];
