@@ -436,7 +436,7 @@ const lamoda = async () => {
     });
 
     console.log(`${getTime()} - connected to page`);
-    const moreBtnSelector = 'span.paginator__next';
+    const moreBtnSelector = 'span.paginator__next:not([style*="display: none;"])';
     const productNodes = [];
     let showMoreBtn = null;
     let clickCounter = 0;
@@ -475,7 +475,7 @@ const lamoda = async () => {
         console.log(`${getTime()} - more button clicked`);
         await page.waitForTimeout(3000);
       }
-    } while (showMoreBtn && clickCounter < 30);
+    } while (showMoreBtn && clickCounter < 40);
 
     console.log(`${getTime()} - all products loaded`);
     // Scroll back to top
