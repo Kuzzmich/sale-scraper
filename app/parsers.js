@@ -22,7 +22,7 @@ const asos = async () => {
     while (showMoreBtn && clickCounter < 30) {
       await showMoreBtn.evaluate(btn => btn.click());
       console.log(`${getTime()} - more button clicked`);
-      await page.waitFor(1500);
+      await page.waitForTimeout(1500);
       showMoreBtn = await page.$('[data-auto-id="loadMoreProducts"]');
       clickCounter++;
     }
@@ -115,7 +115,7 @@ const endClothing = async () => {
     while (showMoreBtn && clickCounter < 30) {
       await showMoreBtn.evaluate(btn => btn.click());
       console.log(`${getTime()} - more button clicked`);
-      await page.waitFor(1500);
+      await page.waitForTimeout(1500);
       showMoreBtn = await page.$('.sc-1j0b8up-0.Xpmnl');
       clickCounter++;
     }
@@ -249,7 +249,7 @@ const yoox = async () => {
       if (showMoreBtn) {
         await showMoreBtn.evaluate(btn => btn.click());
         console.log(`${getTime()} - more button clicked`);
-        await page.waitFor(3000);
+        await page.waitForTimeout(3000);
       }
     } while (showMoreBtn && clickCounter < 30);
 
@@ -361,7 +361,7 @@ const farfetch = async () => {
       if (showMoreBtn) {
         await showMoreBtn.evaluate(btn => btn.click());
         console.log(`${getTime()} - more button clicked`);
-        await page.waitFor(3000);
+        await page.waitForTimeout(3000);
       }
     } while (showMoreBtn && clickCounter < 30);
 
@@ -473,7 +473,7 @@ const lamoda = async () => {
       if (showMoreBtn) {
         await showMoreBtn.evaluate(btn => btn.click());
         console.log(`${getTime()} - more button clicked`);
-        await page.waitFor(3000);
+        await page.waitForTimeout(3000);
       }
     } while (showMoreBtn && clickCounter < 30);
 
@@ -582,7 +582,7 @@ const rendezVous = async () => {
       if (showMoreBtn) {
         await showMoreBtn.evaluate(btn => btn.click());
         console.log(`${getTime()} - more button clicked`);
-        await page.waitFor(3000);
+        await page.waitForTimeout(3000);
       }
     } while (showMoreBtn && clickCounter < 30);
 
@@ -889,7 +889,7 @@ const nike = async () => {
       console.log(`${getTime()} - scrolling bottom`);
       height = newHeight;
       await helpers.scrollPageToBottom(page, height);
-      await page.waitFor(3000);
+      await page.waitForTimeout(3000);
       const bodyHandle = await page.$('#react-root');
       newHeight = (await bodyHandle.boundingBox()).height;
       await bodyHandle.dispose();
@@ -1011,7 +1011,7 @@ const reebok = async () => {
       if (showMoreBtn) {
         await showMoreBtn.evaluate(btn => btn.click());
         console.log(`${getTime()} - more button clicked`);
-        await page.waitFor(3000);
+        await page.waitForTimeout(3000);
       }
     } while (showMoreBtn && clickCounter < 30);
 
@@ -1121,7 +1121,7 @@ const adidas = async () => {
       if (showMoreBtn) {
         await showMoreBtn.evaluate(btn => btn.click());
         console.log(`${getTime()} - more button clicked`);
-        await page.waitFor(3000);
+        await page.waitForTimeout(3000);
       }
     } while (showMoreBtn && clickCounter < 30);
 
@@ -1204,7 +1204,7 @@ const puma = async () => {
     const showAllBtn = await page.$('.btn.btn_red.btn-pager');
     if (showAllBtn) {
       await showAllBtn.evaluate(btn => btn.click());
-      await page.waitFor(3000);
+      await page.waitForTimeout(3000);
     }
     let clickCounter = 0;
 
@@ -1213,7 +1213,7 @@ const puma = async () => {
       console.log(`${getTime()} - scrolling bottom`);
       height = newHeight;
       await helpers.scrollPageToBottom(page, height);
-      await page.waitFor(3000);
+      await page.waitForTimeout(3000);
       const bodyHandle = await page.$('[data-container="body"]');
       newHeight = (await bodyHandle.boundingBox()).height;
       await bodyHandle.dispose();

@@ -38,7 +38,7 @@ const scrollPageToBottom = async (page, stepHeight) => {
     await page.evaluate(_viewportHeight => {
       window.scrollBy(0, _viewportHeight);
     }, viewportHeight);
-    await page.waitFor(200);
+    await page.waitForTimeout(200);
     viewportIncr = viewportIncr + viewportHeight;
   }
 };
