@@ -12,6 +12,7 @@
   "reebokUrl": "https://www.reebok.ru/muzhchiny-obuv-outlet?v_size_ru_ru=40%7C40.5%7C41%7C42%7C42.5%7C43%7C44",
   "adidasUrl": "https://www.adidas.ru/muzhchiny-obuv-outlet?v_size_ru_ru=40%7C40.5%7C41%7C42%7C42.5%7C43%7C44%7C44.5%7C45",
   "pumaUrl": "https://ru.puma.com/skidki/muzhchiny/obuv.html?p=2&size=798%2C799%2C801%2C2093%2C2101%2C2102%2C2104",
+  "brandShopUrl": "https://brandshop.ru/sale/?sort=p.price&order=ASC&mfp=31-kategoriya[%D0%9A%D1%80%D0%BE%D1%81%D1%81%D0%BE%D0%B2%D0%BA%D0%B8],13o-razmer[42%20EU,42.5%20EU,43%20EU,43.5%20EU,44%20EU,44.5%20EU,45%20EU,45.5%20EU,46%20EU]&sort=p.price&order=ASC",
   "mongoConnectionString": "mongodb+srv://admin:Kuzzmich26rus@cluster0.1twre.mongodb.net/sale-products?retryWrites=true&w=majority",
   "mongoDbName": "sale-products",
   "productsCollectionName": "products",

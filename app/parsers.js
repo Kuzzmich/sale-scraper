@@ -1314,6 +1314,119 @@ const puma = async () => {
   }
 };
 
+const brandShop = async () => {
+  const shopName = 'brand shop';
+  console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
+
+  const {browser, page} = await helpers.initBrowser(true);
+
+  try {
+    await page.goto(config.brandShopUrl, {
+      waitUntil: [
+        'load',
+        'domcontentloaded',
+        'networkidle0',
+        'networkidle2'
+      ],
+      timeout: 60000
+    });
+
+    console.log(`${getTime()} - connected to page`);
+    const moreBtnSelector = '.pagination > div.hidden-sm > *:last-child';
+    const productNodes = [];
+    let showMoreBtn = null;
+    let clickCounter = 0;
+
+    do {
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Get the height of the rendered page
+      const bodyHandle = await page.$('main.product-list .container');
+      const {height} = await bodyHandle.boundingBox();
+      await bodyHandle.dispose();
+
+      console.log(`${getTime()} - scrolling bottom`);
+      // Scroll one viewport at a time, pausing to let content load
+      await helpers.scrollPageToBottom(page, height);
+
+      // Scroll back to top
+      await page.evaluate(_ => {
+        window.scrollTo(0, 0);
+      });
+
+      // Some extra delay to let images load
+      await page.waitForTimeout(5000);
+
+      console.log(`${getTime()} - parsing data`);
+      const html = await page.content();
+      const products = $('div.product-container', html).get();
+      productNodes.push(...products);
+
+      showMoreBtn = await page.$(moreBtnSelector);
+      if (showMoreBtn) {
+        const href = await (await showMoreBtn.getProperty('href')).jsonValue();
+        if (!href) showMoreBtn = null;
+      }
+      clickCounter++;
+      if (showMoreBtn) {
+        await showMoreBtn.evaluate(btn => btn.click());
+        console.log(`${getTime()} - more button clicked`);
+        await page.waitForTimeout(3000);
+      }
+    } while (showMoreBtn && clickCounter < 30);
+
+    console.log(`${getTime()} - all products loaded`);
+    // Scroll back to top
+    await browser.close();
+
+    let parsedProductsList = $(productNodes).map((i, p) => {
+      const url = $(p).find('a.product-image').attr('href');
+      const name = $(p).find('h2').contents().toArray().map(b => b.data || $(b).text()).join(' ');
+      const oldPrice = parseFloat($(p).find('.price > .del').text().replace(/[ р]/g, '') || 0);
+      const newPrice = parseFloat($(p).find('.price-sale').text().replace(/[ р]/g, '') || 0);
+      let discount = 0;
+      if (oldPrice && newPrice) discount = Math.floor((oldPrice - newPrice) / oldPrice * 100);
+      const img = $(p).find('.product-image > img').attr('src');
+      const timestamp = Date.now();
+
+      return {
+        shop: shopName,
+        name,
+        oldPrice,
+        newPrice,
+        discount,
+        img,
+        url,
+        timestamp,
+      };
+    })
+      .get()
+      .filter(p => p.discount >= 20 && p.newPrice <= 15000)
+      .sort((a, b) => {
+        if (a.discount > b.discount) {
+          return -1;
+        }
+        if (a.discount < b.discount) {
+          return 1;
+        }
+        return 0;
+      });
+    parsedProductsList = _.uniqBy(parsedProductsList, 'url');
+
+    return parsedProductsList;
+  } catch (e) {
+    await browser.close();
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
+    console.log(e);
+    return [];
+  }
+};
+
 module.exports = {
   asos,
   endClothing,
@@ -1327,5 +1440,6 @@ module.exports = {
   nike,
   reebok,
   adidas,
-  puma
+  puma,
+  brandShop
 };

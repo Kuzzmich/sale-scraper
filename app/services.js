@@ -1,4 +1,6 @@
 const config = require('config');
+const Sentry = require("@sentry/node");
+Sentry.init({ dsn: config.sentryDsn });
 const MongoClient = require('mongodb').MongoClient;
 const axios = require('axios');
 const FileType = require('file-type');
@@ -63,22 +65,29 @@ const sendTelegramNotification = async (insertedProducts) => {
 };
 
 const sendTelegramMediaGroup = async (insertedProducts) => {
-  const message = await Promise.all(insertedProducts.map(async p => {
-    const imageRes = await axios(encodeURI(p.img), { responseType: 'arraybuffer' });
-    const image = imageRes.data;
-    const fileType = await FileType.fromBuffer(image);
+  let message = await Promise.all(insertedProducts.map(async p => {
+    try {
+      const imageRes = await axios(encodeURI(p.img), {responseType: 'arraybuffer'});
+      const image = imageRes.data;
+      const fileType = await FileType.fromBuffer(image);
 
-    return {
-      type: 'photo',
-      media: image,
-      caption: helpers.generateTelegramMessageText(p),
-      parse_mode: 'HTML',
-      fileOptions: {
-        filename: p.name,
-        contentType: fileType.mime,
+      return {
+        type: 'photo',
+        media: image,
+        caption: helpers.generateTelegramMessageText(p),
+        parse_mode: 'HTML',
+        fileOptions: {
+          filename: p.name,
+          contentType: fileType.mime,
+        }
       }
+    } catch (e) {
+      // skip not downloaded sources
+      Sentry.captureException(e);
+      return null;
     }
   }));
+  message.filter(m => m);
 
   // send text message with all the products
   await bot.sendMediaGroup(config.telegramChatId, message);
