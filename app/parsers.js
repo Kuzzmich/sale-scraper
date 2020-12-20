@@ -92,8 +92,10 @@ const asos = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -186,8 +188,10 @@ const endClothing = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -298,8 +302,10 @@ const yoox = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -410,22 +416,24 @@ const farfetch = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
 
 };
 
-const lamoda = async () => {
+const parseLamoda = async (url) => {
   const shopName = 'lamoda';
   console.log(`${getTime()} - ${shopName.toUpperCase()} scraping started...`);
 
   const {browser, page} = await helpers.initBrowser();
 
   try {
-    await page.goto(config.lamodaUrl, {
+    await page.goto(url, {
       waitUntil: [
         'load',
         'domcontentloaded',
@@ -475,7 +483,7 @@ const lamoda = async () => {
         console.log(`${getTime()} - more button clicked`);
         await page.waitForTimeout(3000);
       }
-    } while (showMoreBtn && clickCounter < 40);
+    } while (showMoreBtn && clickCounter < 20);
 
     console.log(`${getTime()} - all products loaded`);
     // Scroll back to top
@@ -520,11 +528,23 @@ const lamoda = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
+};
+
+const lamoda = async () => {
+  const parsedProductsList = await parseLamoda(config.lamodaUrl);
+  return parsedProductsList;
+};
+
+const lamoda2 = async () => {
+  const parsedProductsList = await parseLamoda(config.lamodaUrl2);
+  return parsedProductsList;
 };
 
 const rendezVous = async () => {
@@ -629,8 +649,10 @@ const rendezVous = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -742,8 +764,10 @@ const superstep = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -851,8 +875,10 @@ const sneakerhead = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -949,8 +975,10 @@ const nike = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -1059,8 +1087,10 @@ const reebok = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -1169,8 +1199,10 @@ const adidas = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -1273,8 +1305,10 @@ const puma = async () => {
     return parsedProductsList;
   } catch (e) {
     await browser.close();
-    Sentry.setContext('parser', { name: shopName });
-    Sentry.captureException(e);
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.setContext('parser', { name: shopName });
+      Sentry.captureException(e);
+    }
     console.log(e);
     return [];
   }
@@ -1286,6 +1320,7 @@ module.exports = {
   yoox,
   farfetch,
   lamoda,
+  lamoda2,
   rendezVous,
   superstep,
   sneakerhead,
