@@ -26,7 +26,6 @@ const initBrowser = async (disableBlocker = false) => {
   });
 
   const userAgent = new UserAgent({ deviceCategory: 'desktop', platform: 'MacIntel' }).random().toString();
-  console.log(userAgent);
   await page.setUserAgent(userAgent);
 
   if (!disableBlocker) {
